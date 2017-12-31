@@ -1,0 +1,79 @@
+% -*- text -*-
+%% Misc lhs2TeX directives
+
+%format family = "\mathbf{family}"
+
+%% spaces (in 18ths of a quad): \, = 3, \: = 4, \; = 5, \! = -3
+%format liftA2
+
+%format NOP = "{}"
+
+%format =~ = " \simeq "
+
+%% optional double-dollar spelling, to avoid $ confusing emacs latex-mode.
+%format <$$> = <$>
+%format <#> = <$>
+%format <$$ = <$
+%format <# = <$
+
+%format <$> = "\mathbin{<\!\!\!\$\!\!\!>}"
+%format <$ = "\mathbin{<\!\!\!\$}"
+%format <*> = "\mathbin{<\!\!\!*\!\!\!>}"
+
+%% %format <*> = "\circledast"
+
+%% hack: add missing space, e.g., before "{" in data type decl
+%format SPC = "\, {}"
+%format SPACE = "\ {}"
+%format NOP = "{}"
+%format PAUSE = "\pause"
+
+%format mempty = "\emptyset"
+%format <> = " \oplus "
+%format `mappend` = " \oplus "
+%format mappend = "(\oplus)"
+
+%format :* = " \times "
+%format :+ = " + "
+
+%format @ = "{\ @}"
+%format @@ = "@"
+
+%format ~> = " \leadsto "
+
+%format (toCCC (e)) = "\db{" e "}"
+
+%format ~ = "\mathbin{\sim}"
+
+%format BACKex = "\hspace{-1ex}"
+%format BACKquad = "\hspace{-2.2ex}"
+
+%format R = "\mathbb{R}"
+%format C = "\mathbb{C}"
+
+%format ^+^ = "+"
+%format *^ = " \cdot "
+
+%format zeroV = 0
+%format negateV = negate
+
+%% %format <.> = "\mathbin{<\!\!\! \cdot \!\!\!>}"
+
+%format <.> = "\cdot"
+%% %format $@ = "\mathbin{\hat\$}"
+%% %% %format $@ = "\mathbin{\$\!@}"
+
+%format (abs(a)) = "|" a "|"
+%format lim(w)(b) = "\lim_{"w"}{"b"}"
+%format frac(a)(b) = "\frac{"a"}{"b"}"
+%format `approx` = "\approx"
+
+%format *** = "\times"
+%format &&& = "\mathbin{\smalltriangleup}"
+%format ||| = "\mathbin{\smalltriangledown}"
+%format +++ = "\!+\!"
+
+%format |||| = |||
+%format ++++ = +++
+
+%format :-* = "\multimap"

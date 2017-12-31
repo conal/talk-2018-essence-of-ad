@@ -1,0 +1,177 @@
+%% To do: trim these definitions
+
+\newcommand\nc\newcommand
+\nc\rnc\renewcommand
+
+\usepackage{epsfig}
+\usepackage{latexsym}
+
+%% %% lhs2tex messes with verbatim, and I lose spacing.
+%% \usepackage{fancyvrb}
+
+%% \usepackage{enumitem}
+%% \setlist[1]{labelindent=\parindent,itemsep=0.5in,label=$\bullet$}
+%% \setlist[2]{labelindent=\parindent,itemsep=0.5in,label=$\bullet$}
+
+\nc\out[1]{}
+
+\nc\mynoteOut[2]{\mynote{#1}\out{#2}}
+
+% While working, use these defs
+%% \nc\mynote[1]{{\em [#1]}}
+%% \nc\mynotefoot[1]{\footnote{\mynote{#1}}}
+% But for the submission, use these
+\nc\mynote\out
+\nc\mynotefoot\out
+
+\nc\todo{\mynote{To do.}}
+
+\nc\figlabel[1]{\label{fig:#1}}
+\nc\figref[1]{Figure~\ref{fig:#1}}
+
+\nc\needcite{\mynote{ref}}
+
+% \nc{\Opid}[1]{\operatorname{#1}}
+\nc{\Opid}[1]{\Varid{#1}}
+\nc{\Varap}[1]{\Opid{#1}\,}
+\nc{\Varapp}[2]{\Varap{#1}{(#2)}}
+
+\nc\wpicture[2]{\includegraphics[width=#1]{Figures/#2}}
+
+\nc\wfig[2]{
+\begin{center}
+\wpicture{#1}{#2}
+\end{center}
+}
+\nc\fig[1]{\wfig{4in}{#1}}
+
+\nc\usebg[1]{\usebackgroundtemplate{\wpicture{1.2\textwidth}{#1}}}
+
+\nc\framet[2]{\frame{\frametitle{#1}#2}}
+
+\nc\hidden[1]{}
+
+
+\newcommand{\Pair}{\Varid{Pair}}
+
+\newcommand{\stat}[6]{
+#1 & #2 & #3 & #4 & #5 & #6 \\ \hline
+}
+\newcommand{\fftStats}[1]{
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+  \hline
+  \stat{Type}{$+$}{$\times$}{$-$}{total}{max depth} \hline
+  #1
+  \hline
+\end{tabular}
+\end{center}
+}
+
+\nc{\subo}{_{\!\mathit{1}}}
+
+\nc\partframe[1]{\framet{}{\begin{center} \vspace{6ex} {\Huge \textcolor{partColor}{#1}} \end{center}}}
+
+\nc\symTwo[1]{\mathbin{#1\!\!\!#1}}
+\nc\symThree[1]{\mathbin{#1\!\!#1\!\!#1}}
+
+
+\usefonttheme{serif}
+\usepackage{framed}
+\usepackage{hyperref}
+\usepackage{color}
+
+\definecolor{linkColor}{rgb}{0,0.42,0.3}
+\definecolor{partColor}{rgb}{0,0,0.8}
+
+\hypersetup{colorlinks=true,urlcolor=linkColor}
+
+\usepackage{graphicx}
+\usepackage{color}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+\usepackage{geometry}
+% \usepackage[a4paper]{geometry}
+
+%% \usepackage{wasysym}
+\usepackage{mathabx}
+\usepackage{setspace}
+\usepackage{enumerate}
+\usepackage{tikzsymbols}
+% \usepackage{fancybox}
+\usepackage[many]{tcolorbox}
+
+\tcbset{enhanced,boxrule=0.5pt,colframe=black!50!blue,colback=white,boxsep=-2pt,drop fuzzy shadow}
+
+\usepackage[absolute,overlay]{textpos}  % ,showboxes
+
+\TPGrid{364}{273} %% roughly page size in points
+
+\useinnertheme[shadow]{rounded}
+% \useoutertheme{default}
+\useoutertheme{shadow}
+\useoutertheme{infolines}
+% Suppress navigation arrows
+\setbeamertemplate{navigation symbols}{}
+
+\newcommand\sourced[1]{\href{#1}{\tiny (source)}}
+
+
+\definecolor{statColor}{rgb}{0,0.5,0}
+
+\newcommand{\stats}[2]{
+{\small \textcolor{statColor}{work: #1, depth: #2}}}
+
+\newcommand\ccircuit[3]{
+\framet{#1}{
+\vspace{#2ex}
+\wfig{4.5in}{circuits/#3}
+}}
+
+\newcommand\circuit[5]{
+\ccircuit{#1 \hfill \stats {#4}{#5}\hspace{2ex}}{#2}{#3}
+}
+
+\DeclareMathOperator{\D}{Depth}
+\DeclareMathOperator{\W}{Work}
+\nc\Size[1]{\lvert #1 \rvert}
+
+
+\author{\href{http://conal.net}{Conal Elliott}}
+%% \institute{Target}
+
+\graphicspath{{Figures/}}
+
+\definecolor{shadecolor}{rgb}{0.95,0.95,0.95}
+\setlength{\fboxsep}{0.75ex}
+\setlength{\fboxrule}{0.15pt}
+%% \setlength{\shadowsize}{2pt}
+
+%% \nc\cbox[1]{\raisebox{-0.5\height}{\fbox{#1}}}
+\nc\cpic[2]{\fbox{\wpicture{#1}{circuits/#2}}}
+\nc\ccap[3]{
+\begin{minipage}[c]{0.48\textwidth}
+\begin{center}
+\cpic{#2}{#3}\par\vspace{0.5ex}#1\par
+\end{center}
+\end{minipage}
+}
+
+\setlength{\itemsep}{2ex}
+\setlength{\parskip}{1ex}
+% \setstretch{1.2} % ??
+
+\nc\pitem{\pause\item}
+
+%% Double quote symbol
+\nc\dq{\text{\tt\char34}}
+%% Quoted haskell string with formatted content
+\nc\hquoted[1]{\dq\!#1\!\dq}
+
+%% Pandoc introduces tightlist
+\nc\tightlist{\itemsep1ex}
+
+\nc\btimes{\pmb{\times}}
+\nc\bplus{\pmb{+}}
+% \nc\bcomp{\pmb{\circ}}
+\nc\bcomp{\circ}

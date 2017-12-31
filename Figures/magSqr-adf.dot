@@ -1,0 +1,47 @@
+digraph magSqr_adf {
+  ranksep=0.75
+  margin=0
+  compound=true
+  rankdir=LR
+  node [shape=Mrecord]
+  edge [fontsize=8,fontcolor=indigo]
+  bgcolor=transparent
+  nslimit=20
+  subgraph clusterc0 { label=""; color=white; margin=0; c0 [label="{In|{<Out0>|<Out1>}}"] }
+  subgraph clusterc1315 { label=""; color=white; margin=0; c1315 [label="{{<In0>|<In1>}|\×|{<Out0>}}"] }
+  subgraph clusterc1316 { label=""; color=white; margin=0; c1316 [label="{{<In0>|<In1>}|\×|{<Out0>}}"] }
+  subgraph clusterc1317 { label=""; color=white; margin=0; c1317 [label="{{<In0>|<In1>}|+|{<Out0>}}"] }
+  subgraph cluster_1393 {
+    margin=8
+    fontsize=20
+    labeljust=r
+    color=DarkGreen
+    c1387 [label="{{<In0>|<In1>}|\×|{<Out0>}}"]
+    c1389 [label="{{<In0>|<In1>}|\×|{<Out0>}}"]
+    c1388 [label="{{<In0>|<In1>}|+|{<Out0>}}"]
+    c1391 [label="{{<In0>|<In1>}|+|{<Out0>}}"]
+    c1390 [label="{{<In0>|<In1>}|+|{<Out0>}}"]
+    c1386 [label="{In|{<Out0>|<Out1>}}"]
+    c1392 [label="{{<In0>}|Out}"]
+    c0:Out0 -> c1387:In0 []
+    c1386:Out0 -> c1387:In1 []
+    c0:Out1 -> c1389:In0 []
+    c1386:Out1 -> c1389:In1 []
+    c1387:Out0 -> c1388:In0 []
+    c1387:Out0 -> c1388:In1 []
+    c1388:Out0 -> c1391:In0 []
+    c1390:Out0 -> c1391:In1 []
+    c1389:Out0 -> c1390:In0 []
+    c1389:Out0 -> c1390:In1 []
+    c1391:Out0 -> c1392:In0 []
+  }
+  subgraph clusterc1394 { label=""; color=white; margin=0; c1394 [label="{{<In0>|<In1>}|Out}"] }
+  c0:Out0 -> c1315:In0 []
+  c0:Out0 -> c1315:In1 []
+  c0:Out1 -> c1316:In0 []
+  c0:Out1 -> c1316:In1 []
+  c1315:Out0 -> c1317:In0 []
+  c1316:Out0 -> c1317:In1 []
+  c1317:Out0 -> c1394:In0 []
+  c1392 -> c1394:In1 [ltail=cluster_1393]
+}
