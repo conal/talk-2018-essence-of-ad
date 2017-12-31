@@ -216,9 +216,11 @@ See \href{http://conal.net/papers/compiling-to-categories/}{\emph{Compiling to c
 }
 
 \framet{AD example --- |sqr|}{
-\vspace{-4ex}
+\vspace{4ex}
 
 > sqr a = a * a
+>
+> sqr = mulC . (id &&& id)
 
 \begin{textblock}{160}[1,0](357,37)
 \begin{tcolorbox}
@@ -227,16 +229,18 @@ See \href{http://conal.net/papers/compiling-to-categories/}{\emph{Compiling to c
 \end{textblock}
 \pause
 
-\vspace{4ex}
+\vspace{0ex}
 \begin{center}\wpicture{4.8in}{sqr-adf}\end{center}
 
 %% \figoneW{0.51}{cosSinProd-ad}{|andDeriv cosSinProd|}{\incpic{cosSinProd-ad}}}
 }
 
 \framet{AD example --- |magSqr|}{
-\vspace{4ex}
+\vspace{8ex}
 
 > magSqr (a,b) = sqr a + sqr b
+>
+> magSqr = addC . (mulC . (exl &&& exl) &&& mulC . (exr &&& exr))
 
 \begin{textblock}{160}[1,0](357,37)
 \begin{tcolorbox}
@@ -245,8 +249,8 @@ See \href{http://conal.net/papers/compiling-to-categories/}{\emph{Compiling to c
 \end{textblock}
 \pause
 
-\vspace{4ex}
-\begin{center}\wpicture{4.8in}{magSqr-adf}\end{center}
+\vspace{-4ex}
+\begin{center}\wpicture{4.5in}{magSqr-adf}\end{center}
 
 %% \figoneW{0.51}{cosSinProd-ad}{|andDeriv cosSinProd|}{\incpic{cosSinProd-ad}}}
 }
