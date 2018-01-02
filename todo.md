@@ -1,3 +1,5 @@
 ## To do
 
-*   Maybe use infix `(~>)` in place of `k`.
+## Did
+
+*   Use infix `(~>)` in place of `k`.
