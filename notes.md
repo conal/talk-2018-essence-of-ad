@@ -14,6 +14,7 @@
 *   These operations correspond to cartesian categories.
     There are many others, and each might be an interesting and useful variant of AD.
     Parametrizing by a CC gives "generalized AD".
+
 *   I'd like to generalize `NumCat` etc as well, but our definitions are specific to functions.
     Can we rephrase via a more general vocabulary?
 *   Coproducts and scaling: along with products to give a generalized vocabulary of "linear maps".

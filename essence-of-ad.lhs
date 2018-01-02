@@ -2,8 +2,8 @@
 
 % Presentation
 %\documentclass[aspectratio=1610]{beamer} % Macbook Pro screen 16:10
-%% \documentclass{beamer} % default aspect ratio 4:3
-\documentclass[handout]{beamer}
+\documentclass{beamer} % default aspect ratio 4:3
+%% \documentclass[handout]{beamer}
 
 % \setbeameroption{show notes} % un-comment to see the notes
 
@@ -30,8 +30,10 @@
 % \large
 
 \frame{\titlepage}
-\title{The simple essence of automatic differentiation}
-\institute{Target}
+\title{Essence of automatic differentiation}
+% \title{Simple essence of AD}
+% \institute{Target}
+\date{Jan 2018}
 
 \framet{What's a derivative?}{
 
@@ -108,7 +110,7 @@ andDer f = f &&& der f     -- specification
 Often much work in common to |f| and |der f|.
 }
 
-\framet{Linear functions are their own derivatives everywhere.}{
+\framet{Linear functions}{
 
 Linear functions are their own perfect linear approximations.
 
@@ -127,6 +129,12 @@ For linear functions |f|,
 
 }
 
+\nc\scrk[1]{_{\hspace{#1}\scriptscriptstyle{k\!}}}
+
+%format Prod (k) a b = a "\times\scrk{-0.25ex}" b
+%format Coprod (k) a b = a "+\scrk{-0.3ex}" b
+%format Exp (k) a b = a "\Rightarrow\scrk{-0.2ex}" b
+
 %%  %format da = "\Delta a"
 %%  %format db = "\Delta b"
 
@@ -136,26 +144,29 @@ For linear functions |f|,
 class Category k where
   id   :: a `k` a
   (.)  :: (b `k` c) -> (a `k` b) -> (a `k` c)
-  infixr 9 .
-
-NOP
 
 class Category k => ProductCat k where
   type Prod k a b
   exl    ::  (Prod k a b) `k` a
   exr    ::  (Prod k a b) `k` b
   (&&&)  ::  (a `k` c)  -> (a `k` d)  -> (a `k` (Prod k c d))
-  infixr 3 &&&
+
+class Category k => CoproductCat k where
+  type Coprod k a b
+  inl    ::  a `k` (Coprod k a b)
+  inr    ::  b `k` (Coprod k a b)
+  (|||)  ::  (a `k` c)  -> (b `k` c)  -> ((Coprod k a b) `k` c)
 \end{code}
 
+\vspace{-1ex}
 Plus laws and classes for arithmetic etc.
 
 }
 
-\framet{A simple AD implementation}{
+\framet{Simple automatic differentiation}{
 \mathindent-1ex
 \begin{code}
-data D a b = D (a -> b :* (a :-* b)) -- Derivatives are linear maps.
+data D a b = D (a -> b :* (a :-* b))
 \end{code}
 \pause
 \vspace{-4ex}
@@ -202,20 +213,20 @@ cosSinProd = (cosC &&& sinC) . mulC
 \end{code}
 }
 
-\framet{Computation graphs --- example}{
+\framet{Visualizing computations}{
 
 > magSqr (a,b) = sqr a + sqr b
 > NOP
 > magSqr = addC . (mulC . (exl &&& exl) &&& mulC . (exr &&& exr))
 
 \vspace{-5ex}
-\begin{center}\wpicture{4.5in}{magSqr}\end{center}
+\begin{center}\wpicture{4in}{magSqr}\end{center}
 
 Auto-generated from Haskell code.
 See \href{http://conal.net/papers/compiling-to-categories/}{\emph{Compiling to categories}}.
 }
 
-\framet{AD example --- |sqr|}{
+\framet{AD example}{
 \vspace{4ex}
 
 > sqr a = a * a
@@ -235,7 +246,7 @@ See \href{http://conal.net/papers/compiling-to-categories/}{\emph{Compiling to c
 %% \figoneW{0.51}{cosSinProd-ad}{|andDeriv cosSinProd|}{\incpic{cosSinProd-ad}}}
 }
 
-\framet{AD example --- |magSqr|}{
+\framet{AD example}{
 \vspace{8ex}
 
 > magSqr (a,b) = sqr a + sqr b
@@ -255,5 +266,106 @@ See \href{http://conal.net/papers/compiling-to-categories/}{\emph{Compiling to c
 %% \figoneW{0.51}{cosSinProd-ad}{|andDeriv cosSinProd|}{\incpic{cosSinProd-ad}}}
 }
 
+\framet{Generalizing AD}{
+\mathindent-1ex
+\begin{code}
+data D a b = D (a -> b :* (a :-* b))
+\end{code}
+\pause
+\vspace{-6ex}
+\begin{code}
+linearD f = D (f &&& const f)
+
+instance Category D where
+  id = linearD id
+  D g . D f = D (\ a -> let { (b,f') = f a ; (c,g') = g b } in (c, g' . f'))
+
+instance Cartesian D where
+  exl  = linearD exl
+  exr  = linearD exr
+  D f &&& D g = D (\ a -> let { (b,f') = f a ; (c,g') = g a } in ((b,c), f' &&& g'))
+\end{code}
+
+\vspace{0.5ex}
+\pause
+
+Each |D| operation just uses corresponding |(:-*)| operation.
+
+Generalize from |(:-*)| to other cartesian categories.
+}
+
+\framet{Generalized AD}{
+\mathindent-1ex
+\begin{code}
+data GD k a b = D (a -> b :* (a `k` b))
+
+instance Category k => Category (GD k) where
+  id = linearD id
+  D g . D f = D (\ a -> let { (b,f') = f a ; (c,g') = g b } in (c, g' . f'))
+
+instance Cartesian k => Cartesian (GD k) where
+  exl  = linearD exl
+  exr  = linearD exr
+  D f &&& D g = D (\ a -> let { (b,f') = f a ; (c,g') = g a } in ((b,c), f' &&& g'))
+\end{code}
+
+}
+
+\framet{Numeric operations}{
+
+Specific to (linear) \emph{functions}:
+
+>      mulC  = D (mulC &&& \ (a,b) -> (\ (da,db) -> b*da + a*db))
+
+\pause
+
+Rephrase:
+
+\begin{code}
+scale :: Multiplicative a => a -> (a -> a)
+scale u = \ v -> u * v
+
+(||||) :: Additive c => (a -> c) -> (b -> c) -> ((a :* b) -> c)
+f |||| g = \ (a,b) -> f a ^+^ g b
+\end{code}
+
+Now
+
+>      mulC  = D (mulC &&& (scale b |||| scale a))
+
+}
+
+\framet{Linear arrow vocabulary}{
+\begin{code}
+class Category k where
+  id   :: a `k` a
+  (.)  :: (b `k` c) -> (a `k` b) -> (a `k` c)
+
+class Category k => ProductCat k where
+  exl    :: (a :* b) `k` a
+  exr    :: (a :* b) `k` b
+  (&&&)  :: (a `k` c) -> (a `k` d) -> (a `k` (c :* d))
+
+class Category k => CoproductCat k where
+  inl    :: Additive b  => a `k` (a :* b)
+  inr    :: Additive a  => b `k` (a :* b)
+  (|||)  :: Additive c  => (a `k` c) -> (b `k` c) -> ((a :* b) `k` c)
+
+class ScalarCat k a where
+  scale :: a -> (a `k` a)
+\end{code}
+}
+
+\framet{Generalized matrix construction}{
+
+Three operations suffice build arbitrary matrices:
+
+\begin{code}
+  scale  :: a -> (a `k` a)                              -- $1\times1$
+  (|||)  :: (a `k` c) -> (b `k` c) -> ((a :* b) `k` c)  -- horizontal juxt
+  (&&&)  :: (a `k` c) -> (a `k` d) -> (a `k` (c :* d))  -- vertical juxt
+\end{code}
+
+}
 
 \end{document}
