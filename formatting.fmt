@@ -9,6 +9,7 @@
 %format NOP = "{}"
 
 %format =~ = " \simeq "
+%format =~= = " \cong "
 
 %% optional double-dollar spelling, to avoid $ confusing emacs latex-mode.
 %format <$$> = <$>
@@ -77,3 +78,10 @@
 %format ++++ = +++
 
 %format :-* = "\multimap"
+
+
+%format Par1 = "\Varid{Id}"
+%format unPar1 = "\Varid{unId}"
+
+%format :*: = "\btimes"
+%format :.: = "\bcomp"

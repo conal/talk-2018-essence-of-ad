@@ -2,6 +2,8 @@
 
 [*Beautiful differentiation*]: http://conal.net/papers/beautiful-differentiation/ "Paper by Conal Elliott (2009)"
 
+[*Continuation-Based Program Transformation Strategies*]: http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.83.8567 "Paper by Mitch Wand (1980)"
+
 *   What's a derivative?
     (Linear maps.)
 *   Chain rule.
@@ -14,7 +16,6 @@
 *   These operations correspond to cartesian categories.
     There are many others, and each might be an interesting and useful variant of AD.
     Parametrizing by a CC gives "generalized AD".
-
 *   I'd like to generalize `NumCat` etc as well, but our definitions are specific to functions.
     Can we rephrase via a more general vocabulary?
 *   Coproducts and scaling: along with products to give a generalized vocabulary of "linear maps".
@@ -52,7 +53,7 @@
         *   The continuation representation will have an associativity property corresponding to associativity of composing continuations.
             For `reverse`, the continuations have type `[a] -> [a]`; and they all have the form `(++ as)` and so can be represented simply by `as`.
         *   This trick generalizes to all monoids, and monoids generalize to categories.
-*   CPS-like category: `(b -> o) -> (a -> o)`.
+*   CPS-like category: `(b -> r) -> (a -> r)`.
     Generalize to `(b ~> r) -> (a ~> r)`, parametrized by `(~>)` and `r`.
     Corresponds to a categorical pullback and results in left-composition.
     Yields the notion of duality/transposition in linear algebra.

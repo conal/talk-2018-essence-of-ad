@@ -25,6 +25,8 @@
 
 \nc\wow\emph
 
+\usepackage{scalerel}
+
 \begin{document}
 
 % \large
@@ -129,14 +131,22 @@ For linear functions |f|,
 
 }
 
-\nc\scrk[1]{_{\hspace{#1}\scriptscriptstyle{k\!}}}
+%% \nc\scrk[1]{_{\hspace{#1}\scriptscriptstyle{(\leadsto)\!}}}
+\nc\scrk[1]{_{\hspace{#1}\scaleto{(\leadsto)\!}{4pt}}}
 
-%format Prod (k) a b = a "\times\scrk{-0.25ex}" b
-%format Coprod (k) a b = a "+\scrk{-0.3ex}" b
-%format Exp (k) a b = a "\Rightarrow\scrk{-0.2ex}" b
+%format ProductCat = Cartesian
+%format CoproductCat = Cocartesian
+%format CoproductPCat = Cocartesian
+
+%format Prod (k) a b = a "\times\scrk{-0.4ex}" b
+%format Coprod (k) a b = a "+\scrk{-0.4ex}" b
+%% %format Exp (k) a b = a "\Rightarrow\scrk{-0.2ex}" b
 
 %%  %format da = "\Delta a"
 %%  %format db = "\Delta b"
+
+%format `k` = "\leadsto"
+%format k = "(\leadsto)"
 
 \framet{Abstract algebra for functions}{
 
@@ -358,13 +368,142 @@ class ScalarCat k a where
 
 \framet{Generalized matrix construction}{
 
-Three operations suffice build arbitrary matrices:
-
 \begin{code}
   scale  :: a -> (a `k` a)                              -- $1\times1$
+
   (|||)  :: (a `k` c) -> (b `k` c) -> ((a :* b) `k` c)  -- horizontal juxt
+
   (&&&)  :: (a `k` c) -> (a `k` d) -> (a `k` (c :* d))  -- vertical juxt
 \end{code}
+
+\vspace{2ex}
+Sufficient to build arbitrary matrices.
+
+\vspace{4ex}
+Types guarantee rectangularity.
+
+}
+
+%format Double = R
+
+\framet{A ``matrix'' representation}{\mathindent2ex
+\begin{code}
+newtype L s a b = L (V s b (V s a s))
+
+class HasV s a where
+  type V s a :: * -> * -- Free vector space as representable functor
+  toV  :: a -> V s a s
+  unV  :: V s a s -> a
+
+instance HasV Double Double where
+  type V Double Double = Par1
+  toV  = Par1
+  unV  = unPar1
+
+instance (HasV s a, HasV s b) => HasV s (a :* b) where
+  type V s (a :* b) = V s a :*: V s b
+  toV (a , b)    = toV a :*: toV b
+  unV (f :*: g)  = (unV f,unV g)
+\end{code}
+}
+
+\framet{Efficiency of composition}{
+\begin{itemize}\itemsep2ex
+\item
+  Some orders of composition are more efficient than others.
+\item
+  Fortunately, arrow composition is associative:
+  \begin{itemize}\itemsep2ex
+  \item Associate optimally.
+  \item Equivalent to \emph{matrix chain multiplication} --- $O(n \log n)$.
+  \item Choice determined by \emph{types}, i.e., compile-time information.
+  \end{itemize}
+\item
+  All right composition gives ``forward mode AD'' (FAD).\\
+  Good for scalar domains.
+\item
+  All left composition gives ``reverse mode AD'' (RAD).\\
+  Good for scalar codomains.
+\item
+  RAD is a much better choice for gradient-based optimization.
+\end{itemize}
+}
+
+%format --> = "\mapsto"
+\framet{Left-associating composition (RAD)}{
+\begin{itemize}\itemsep2ex \parskip1ex
+\item CPS-like category:
+  \begin{itemize}\itemsep2ex
+  \item Represent |a `k` b| by |(b `k` r) -> (a `k` r)|.
+  \item Meaning: |ab --> \ br -> br . ab|.
+  \item Results in left-composition.
+  \item Corresponds to a categorical pullback.
+  \item Duality/transposition in linear algebra.
+  \end{itemize}
+\item We've seen this trick before:
+  \begin{itemize}\itemsep2ex
+  \item Transforming naive |reverse| from quadratic to linear.
+  \item Lists generalize to monoids, and monoids to categories.
+  \end{itemize}
+\end{itemize}
+}
+
+\framet{One of my favorite papers}{
+  \begin{itemize}\itemsep2ex
+  \item \href{http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.83.8567}{\emph{Continuation-Based Program Transformation Strategies}} \\ Mitch Wand, 1980, JACM.
+  \item Introduce a continuation argument, e.g., |[a] -> [a]|.
+  \item Notice the continuations that arise, e.g., |(++ as)|.
+  \item Find a \emph{data} representation, e.g., |as :: [a]|
+  \item Identify operation that represents composition, e.g., |(++)|
+  \item Representation will have corresponding associativity property.
+  \end{itemize}
+}
+
+
+%% %format dot u v = u <.> v
+%format dot u v = "\langle" u "," v "\rangle"
+
+\framet{Eliminating matrices}{
+\begin{itemize}\itemsep2ex
+\item Vector space dual: |U :-* r|, with |U| a vector space over |r|.
+\item If |U| has finite dimension, then |U :-* r =~= U|.
+\item If |f :: U :-* r|, then |f u == dot v u| for some |v|.
+\item Gradients are derivatives of functions with scalar codomain.
+\item Represent |a `k` b| by |(b `k` r) -> (a `k` r)| by |b -> a|.
+\item %% Construct |br . der ab a| without building |der ab a|.
+ Construct |dot v . der f a| directly, without |dot v| or |der f a|.
+\item Eliminates matrices (often sparse/expensive).
+\end{itemize}
+}
+
+%format inDual2
+
+\framet{Dual categories}{
+\begin{code}
+data Dual k a b = Dual (b `k` a)
+
+instance Category k => Category (Dual k) where
+  id   = Dual id
+  (.)  = inDual2 (flip (.))
+
+instance CoproductCat k => ProductCat (Dual k) where
+  exl   = Dual inlD
+  exr   = Dual inrD
+  (&&&) = inDual2 (|||)
+
+instance ProductCat k => CoproductPCat (Dual k) where
+  inl   = Dual exl
+  inr   = Dual exr
+  (|||) = inDual2 (&&&)
+
+instance ScalarCat k s => ScalarCat (Dual k) s where
+  scale s = Dual (scale s)
+\end{code}
+}
+
+\framet{Reverse-mode AD without tears}{
+
+> type RAD = GD (Dual AdditiveFun)
 
 }
 
