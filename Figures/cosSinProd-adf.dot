@@ -1,0 +1,48 @@
+digraph cosSinProd_adf {
+  margin=0
+  compound=true
+  rankdir=LR
+  node [shape=Mrecord]
+  edge [fontsize=8,fontcolor=indigo]
+  bgcolor=transparent
+  nslimit=20
+  subgraph clusterc0 { label=""; color=white; margin=0; c0 [label="{In|{<Out0>|<Out1>}}"] }
+  subgraph clusterc56 { label=""; color=white; margin=0; c56 [label="{{<In0>|<In1>}|\×|{<Out0>}}"] }
+  subgraph clusterc57 { label=""; color=white; margin=0; c57 [label="{{<In0>}|cos|{<Out0>}}"] }
+  subgraph clusterc58 { label=""; color=white; margin=0; c58 [label="{{<In0>}|sin|{<Out0>}}"] }
+  subgraph cluster_108 {
+    margin=8
+    fontsize=20
+    labeljust=r
+    color=DarkGreen
+    c102 [label="{{<In0>|<In1>}|\×|{<Out0>}}"]
+    c101 [label="{{<In0>|<In1>}|\×|{<Out0>}}"]
+    c106 [label="{{<In0>|<In1>}|\×|{<Out0>}}"]
+    c104 [label="{{<In0>|<In1>}|\×|{<Out0>}}"]
+    c103 [label="{{<In0>|<In1>}|+|{<Out0>}}"]
+    c100 [label="{In|{<Out0>|<Out1>}}"]
+    c107 [label="{{<In0>|<In1>}|Out}"]
+    c105 [label="{{<In0>}|negate|{<Out0>}}"]
+    c0:Out0 -> c102:In0 []
+    c100:Out1 -> c102:In1 []
+    c0:Out1 -> c101:In0 []
+    c100:Out0 -> c101:In1 []
+    c57:Out0 -> c106:In0 []
+    c103:Out0 -> c106:In1 []
+    c58:Out0 -> c104:In0 []
+    c103:Out0 -> c104:In1 []
+    c101:Out0 -> c103:In0 []
+    c102:Out0 -> c103:In1 []
+    c105:Out0 -> c107:In0 []
+    c106:Out0 -> c107:In1 []
+    c104:Out0 -> c105:In0 []
+  }
+  subgraph clusterc127 { label=""; color=white; margin=0; c127 [label="{{<In0>|<In1>|<In2>}|Out}"] }
+  c0:Out0 -> c56:In0 []
+  c0:Out1 -> c56:In1 []
+  c56:Out0 -> c57:In0 []
+  c56:Out0 -> c58:In0 []
+  c57:Out0 -> c127:In0 []
+  c58:Out0 -> c127:In1 []
+  c107 -> c127:In2 [ltail=cluster_108]
+}

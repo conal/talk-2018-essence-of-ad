@@ -1,6 +1,6 @@
 ## The simple essence of automatic differentiation
 
-A talk, January 2018.
+An [invited talk for PEPM 2018](https://popl18.sigplan.org/track/PEPM-2018#Invited-Talks).
 
 ### Abstract
 

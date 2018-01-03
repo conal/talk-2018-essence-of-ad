@@ -74,9 +74,6 @@
 %format ||| = "\mathbin{\smalltriangledown}"
 %format +++ = "\!+\!"
 
-%format |||| = |||
-%format ++++ = +++
-
 %format :-* = "\multimap"
 
 

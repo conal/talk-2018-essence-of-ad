@@ -32,7 +32,8 @@
 % \large
 
 \frame{\titlepage}
-\title{Essence of automatic differentiation}
+% \title{Essence of automatic differentiation}
+\title{The simple essence of automatic differentiation}
 % \title{Simple essence of AD}
 % \institute{Target}
 \date{Jan 2018}
@@ -76,23 +77,28 @@ See \emph{Calculus on Manifolds} by Michael Spivak.
 
 \framet{Composition}{
 
-Sequential and parallel:
+Sequential:
 
 \begin{code}
 (.) :: (b -> c) -> (a -> b) -> (a -> c)
 (g . f) a = g (f a)
+
 NOP
-(&&&) :: (a -> c) -> (a -> d) -> (a -> c :* d)
-(f &&& g) a = (f a, g a)
+der (g . f) a == der g (f a) . der f a    -- ``chain rule''
 \end{code}
 
 \pause
-Differentiation rules:
+
+Parallel:
+
 \begin{code}
-der (g . f) a == der g (f a) . der f a    -- ``chain rule''
+(&&&) :: (a -> c) -> (a -> d) -> (a -> c :* d)
+(f &&& g) a = (f a, g a)
+
 NOP
 der (f &&& g) a == der f a &&& der g a
 \end{code}
+
 }
 
 \framet{Compositionality}{
@@ -281,7 +287,21 @@ magSqr = addC . (mulC . (exl &&& exl) &&& mulC . (exr &&& exr))
 \vspace{-4ex}
 \begin{center}\wpicture{4.5in}{magSqr-adf}\end{center}
 
-%% \figoneW{0.51}{cosSinProd-ad}{|andDeriv cosSinProd|}{\incpic{cosSinProd-ad}}}
+}
+
+\framet{AD example}{
+\vspace{12ex}
+\begin{code}
+cosSinProd (x,y) = (cos z, sin z) where z = x * y
+\end{code}
+\begin{textblock}{160}[1,0](357,37)
+\begin{tcolorbox}
+\wpicture{2in}{cosSinProd}
+\end{tcolorbox}
+\end{textblock}
+\pause
+
+\begin{center}\wpicture{4.5in}{cosSinProd-adf}\end{center}
 }
 
 \framet{Generalizing AD}{
@@ -317,6 +337,8 @@ Generalize from |(:-*)| to other cartesian categories.
 \begin{code}
 data GD k a b = D (a -> b :* (a `k` b))
 
+linearD f = D (f &&& const f)
+
 instance Category k => Category (GD k) where
   id = linearD id
   D g . D f = D (\ a -> let { (b,f') = f a ; (c,g') = g b } in (c, g' . f'))
@@ -327,7 +349,13 @@ instance Cartesian k => Cartesian (GD k) where
   D f &&& D g = D (\ a -> let { (b,f') = f a ; (c,g') = g a } in ((b,c), f' &&& g'))
 \end{code}
 
+\vspace{8ex}
 }
+
+%format inlP = inl
+%format inrP = inr
+%format |||| = |||
+%format ++++ = +++
 
 \framet{Numeric operations}{
 Specific to (linear) \emph{functions}:
@@ -373,7 +401,7 @@ class ScalarCat k a where
 \end{code}
 }
 
-\framet{Generalized matrix construction}{
+\framet{Core vocabulary}{
 \begin{code}
   scale  :: a -> (a `k` a)                              -- $1\times1$
 
@@ -387,10 +415,61 @@ Sufficient to build arbitrary matrices.
 
 \vspace{4ex}
 Types guarantee rectangularity.
-
 }
 
 %format Double = R
+
+%format -+> = "\mathbin{\rightarrow^{\!\!+}\!}"
+%% %format -+> = "\rightarrow_{\!\!+}"
+%% %format -+> = "\overset{+}{\longrightarrow}"
+%% %format -+> = "\overset{{}_{+}}{\longrightarrow}"
+%% %format -+> = "\rightarrow\hspace{-3ex}^{\scriptscriptstyle +}\hspace{2ex}"
+%% %format -+> = "\mathbin{\longrightarrow\hspace{-3ex}{+}\hspace{0.7ex}}"
+
+%format inNew2
+
+\framet{Linear transformations as functions}{
+\vspace{-1.2ex}
+\begin{code}
+newtype a -+> b = AddFun (a -> b)
+
+instance Category (-+>) where
+  type Ok (-+>) = Additive
+  id   = AddFun id
+  (.)  = inNew2 (.)
+
+instance ProductCat (-+>) where
+  exl    = AddFun exl
+  exr    = AddFun exr
+  (&&&)  = inNew2 (&&&)
+
+instance CoproductPCat (-+>) where
+  inlP   = AddFun (,zero)
+  inrP   = AddFun (zero,)
+  (||||) = inNew2 (\ f g (x,y) -> f x ^+^ g y)
+
+instance Num s => ScalarCat (-+>) s where
+  scale s = AddFun (s NOP *)
+\end{code}
+}
+
+\framet{Extracting a data representation}{
+
+\begin{itemize}\itemsep2ex \parskip1ex
+\item How to extract a matrix or gradient vector?
+\item Sample over a domain \emph{basis} (rows of identity matrix).
+\item For $n$-dimensional \emph{domain},
+  \begin{itemize}\itemsep2ex
+  \item Make $n$ passes.
+  \item Each pass works on $n$-D sparse (``one-hot'') input.
+  \end{itemize}
+\item For gradient-based optimization,
+  \begin{itemize}\itemsep2ex
+  \item High-dimensional domain.
+  \item Very low-dimensional (1-D) domain.
+  \end{itemize}
+\end{itemize}
+}
 
 \framet{A ``matrix'' representation}{\mathindent2ex
 \begin{code}
@@ -424,11 +503,11 @@ instance (HasV s a, HasV s b) => HasV s (a :* b) where
   \item Equivalent to \emph{matrix chain multiplication} --- $O(n \log n)$.
   \item Choice determined by \emph{types}, i.e., compile-time information.
   \end{itemize}
-\item
-  All right composition gives ``forward mode AD'' (FAD).\\
+\pitem
+  All-right composition gives ``forward mode AD'' (FAD).\\
   Good for low-dimensional domains.
 \item
-  All left composition gives ``reverse mode AD'' (RAD).\\
+  All-left composition gives ``reverse mode AD'' (RAD).\\
   Good for low-dimensional codomains.
 \item
   RAD is a much better choice for gradient-based optimization.
@@ -438,7 +517,7 @@ instance (HasV s a, HasV s b) => HasV s (a :* b) where
 %format --> = "\mapsto"
 \framet{Left-associating composition (RAD)}{
 \begin{itemize}\itemsep2ex \parskip1ex
-\item CPS-like category:
+\pitem CPS-like category:
   \begin{itemize}\itemsep2ex
   \item Represent |a `k` b| by |(b `k` r) -> (a `k` r)|.
   \item Meaning:
@@ -448,7 +527,7 @@ instance (HasV s a, HasV s b) => HasV s (a :* b) where
   \item Corresponds to a categorical pullback.
   \item Duality/transposition in linear algebra.
   \end{itemize}
-\item We've seen this trick before:
+\pitem We've seen this trick before:
   \begin{itemize}\itemsep2ex
   \item Transforming naive |reverse| from quadratic to linear.
   \item Lists generalize to monoids, and monoids to categories.
@@ -461,28 +540,27 @@ instance (HasV s a, HasV s b) => HasV s (a :* b) where
   \item \href{http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.83.8567}{\emph{Continuation-Based Program Transformation Strategies}} \\ Mitch Wand, 1980, JACM.
   \item Introduce a continuation argument, e.g., |[a] -> [a]|.
   \item Notice the continuations that arise, e.g., |(++ as)|.
-  \item Find a \emph{data} representation, e.g., |as :: [a]|
-  \item Identify operation that represents composition, e.g., |(++)|\out{, since |(++ bs) . (++ as) == (++ NOP (as ++ bs))|}.
-  \item Will have corresponding associativity property.
+  \pitem Find a \emph{data} representation, e.g., |as :: [a]|
+  \item Identify associative operation that represents composition,\\
+  e.g., |(++)| , since |(++ bs) . (++ as) == (++ NOP (as ++ bs))|.
   \end{itemize}
 }
 
-\framet{Eliminating matrices}{
+\framet{Duality}{
 \begin{itemize}\itemsep2.5ex
 \item Vector space dual: |U :-* r|, with |U| a vector space over |r|.
 \item If |U| has finite dimension, then |U :-* r =~= U|.
 \item For |f :: U :-* r|, |f == dot v| for some |v :: U|.
 \item Gradients are derivatives of functions with scalar codomain.
 \item Represent |a `k` b| by |(b `k` r) -> (a `k` r)| by |b -> a|.
-\item %% Construct |br . der ab a| without building |der ab a|.
- Construct |dot v . der f a| directly, without |dot v| or |der f a|.
-\item Eliminates matrices (often large \& sparse).
+\pitem \emph{Ideal} for extracting gradient vector.
+       Just apply to |1|.
+\pitem Construct |dot v . der f a| directly, without |dot v| or |der f a|.\\
+       Eliminates matrices (often large \& sparse).
 %% \item Often don't need vector space; semi-module will do.
-\item Semimodule suffices in place of vector space.
+%% \item Semimodule suffices in place of vector space.
 \end{itemize}
 }
-
-%format inDual2
 
 \framet{Dual categories}{
 \begin{code}
@@ -490,34 +568,134 @@ newtype Dual k a b = Dual (b `k` a)
 
 instance Category k => Category (Dual k) where
   id   = Dual id
-  (.)  = inDual2 (flip (.))
+  (.)  = inNew2 (flip (.))
 
 instance CoproductCat k => ProductCat (Dual k) where
-  exl    = Dual inlD
-  exr    = Dual inrD
-  (&&&)  = inDual2 (|||)
+  exl    = Dual inlP
+  exr    = Dual inrP
+  (&&&)  = inNew2 (||||)
 
 instance ProductCat k => CoproductPCat (Dual k) where
-  inl    = Dual exl
-  inr    = Dual exr
-  (|||)  = inDual2 (&&&)
+  inlP    = Dual exl
+  inrP    = Dual exr
+  (||||)  = inNew2 (&&&)
 
 instance ScalarCat k s => ScalarCat (Dual k) s where
   scale s = Dual (scale s)
 \end{code}
 }
 
-%format -+> = "\mathbin{\rightarrow^{\!\!+}\!}"
-%% %format -+> = "\rightarrow_{\!\!+}"
-%% %format -+> = "\overset{+}{\longrightarrow}"
-%% %format -+> = "\overset{{}_{+}}{\longrightarrow}"
-%% %format -+> = "\rightarrow\hspace{-3ex}^{\scriptscriptstyle +}\hspace{2ex}"
-%% %format -+> = "\mathbin{\longrightarrow\hspace{-3ex}{+}\hspace{0.7ex}}"
-
 \framet{Reverse-mode AD without tears}{
 \begin{code}
 type RAD = GD (Dual (-+>))
 \end{code}
 }
+
+\framet{RAD example (dual function)}{
+\vspace{2ex}
+\begin{textblock}{160}[1,0](357,37)
+\begin{tcolorbox}
+\wpicture{2in}{add}
+\end{tcolorbox}
+\end{textblock}
+\vspace{4ex}
+\begin{center}\hspace{-5ex}\wpicture{4in}{add-adr}\end{center}
+}
+\framet{RAD example (gradient)}{
+\vspace{2ex}
+\begin{textblock}{160}[1,0](357,37)
+\begin{tcolorbox}
+\wpicture{2in}{add}
+\end{tcolorbox}
+\end{textblock}
+\vspace{4ex}
+\begin{center}\hspace{-5ex}\wpicture{4in}{add-gradr}\end{center}
+}
+
+\framet{RAD example (dual function)}{
+\vspace{2ex}
+\begin{textblock}{130}[1,0](357,37)
+\begin{tcolorbox}
+\wpicture{1.5in}{fst}
+\end{tcolorbox}
+\end{textblock}
+\vspace{6ex}
+\begin{center}\hspace{-8ex}\wpicture{3.7in}{fst-adr}\end{center}
+}
+\framet{RAD example (gradient)}{
+\vspace{2ex}
+\begin{textblock}{130}[1,0](357,37)
+\begin{tcolorbox}
+\wpicture{1.5in}{fst}
+\end{tcolorbox}
+\end{textblock}
+\vspace{5ex}
+\begin{center}\hspace{-8ex}\wpicture{2.5in}{fst-gradr}\end{center}
+}
+
+\framet{RAD example (dual function)}{
+\vspace{2ex}
+\begin{textblock}{160}[1,0](357,37)
+\begin{tcolorbox}
+\wpicture{2in}{sqr}
+\end{tcolorbox}
+\end{textblock}
+\vspace{8ex}
+\begin{center}\hspace{-2ex}\wpicture{4.5in}{sqr-adr}\end{center}
+}
+\framet{RAD example (gradient)}{
+\vspace{2ex}
+\begin{textblock}{160}[1,0](357,37)
+\begin{tcolorbox}
+\wpicture{2in}{sqr}
+\end{tcolorbox}
+\end{textblock}
+\vspace{7ex}
+\begin{center}\hspace{-2ex}\wpicture{4in}{sqr-gradr}\end{center}
+}
+
+\framet{RAD example (dual function)}{
+\vspace{2ex}
+\begin{textblock}{160}[1,0](357,37)
+\begin{tcolorbox}
+\wpicture{2in}{magSqr}
+\end{tcolorbox}
+\end{textblock}
+\vspace{4ex}
+\begin{center}\hspace{-2ex}\wpicture{4.5in}{magSqr-adr}\end{center}
+}
+\framet{RAD example (gradient)}{
+\vspace{2ex}
+\begin{textblock}{160}[1,0](357,37)
+\begin{tcolorbox}
+\wpicture{2in}{magSqr}
+\end{tcolorbox}
+\end{textblock}
+\vspace{8ex}
+\begin{center}\hspace{-4ex}\wpicture{4in}{magSqr-gradr}\end{center}
+}
+
+\framet{RAD example (dual function)}{
+\vspace{2ex}
+\begin{textblock}{160}[1,0](357,37)
+\begin{tcolorbox}
+\wpicture{2in}{cosSinProd}
+\end{tcolorbox}
+\end{textblock}
+\vspace{8ex}
+\begin{center}\hspace{-0.5ex}\wpicture{4.8in}{cosSinProd-adr}\end{center}
+}
+%% \framet{RAD example (gradient)}{
+%% \vspace{2ex}
+%% \begin{textblock}{160}[1,0](357,37)
+%% \begin{tcolorbox}
+%% \wpicture{2in}{cosSinProd}
+%% \end{tcolorbox}
+%% \end{textblock}
+%% \vspace{8ex}
+%% \begin{center}\hspace{-4ex}\wpicture{4in}{cosSinProd-gradr}\end{center}
+%% }
+
+%% HERE: use linear
 
 \end{document}
