@@ -58,13 +58,13 @@ For scalar domain:
 
 \pause
 
-Now generalize: unique \wow{linear map} $T$ such that
+Now generalize: unique \wow{linear transformation} $T$ such that
 
 $$|lim(epsilon -> 0)(frac(abs (f (x+epsilon) - (f x + T epsilon)))(abs epsilon)) == 0|$$
 
 \pause\vspace{3ex}
 
-\wow{Derivatives are linear maps:}
+\wow{Derivatives are linear transformations:}
 
 > der :: (a -> b) -> (a -> (a :-* b))
 
@@ -91,7 +91,7 @@ Differentiation rules:
 \begin{code}
 der (g . f) a == der g (f a) . der f a    -- ``chain rule''
 NOP
-der (g &&& f) a == der g a &&& der f a
+der (f &&& g) a == der f a &&& der g a
 \end{code}
 }
 
@@ -103,7 +103,7 @@ Chain rule:
 
 \ 
 
-To fix, combine primal (regular result) with derivative:
+To fix, combine regular result with derivative:
 \begin{code}
 andDer :: (a -> b) -> (a -> (b :* (a :-* b)))
 andDer f = f &&& der f     -- specification
@@ -148,8 +148,12 @@ For linear functions |f|,
 %format `k` = "\leadsto"
 %format k = "(\leadsto)"
 
-\framet{Abstract algebra for functions}{
+%% %format `k` = "\rightsquigarrow"
+%% %format k = "(\rightsquigarrow)"
 
+
+
+\framet{Abstract algebra for functions}{
 \begin{code}
 class Category k where
   id   :: a `k` a
@@ -170,8 +174,13 @@ class Category k => CoproductCat k where
 
 \vspace{-1ex}
 Plus laws and classes for arithmetic etc.
-
 }
+
+%format cosC = cos
+%format sinC = sin
+%format mulC = mul
+%format addC = add
+%format negateC = negate
 
 \framet{Simple automatic differentiation}{
 \mathindent-1ex
@@ -200,7 +209,6 @@ instance NumCat D where
 }
 
 \framet{Running examples}{
-
 \begin{code}
 sqr :: Num a => a -> a
 sqr a = a * a
@@ -224,11 +232,11 @@ cosSinProd = (cosC &&& sinC) . mulC
 }
 
 \framet{Visualizing computations}{
-
-> magSqr (a,b) = sqr a + sqr b
-> NOP
-> magSqr = addC . (mulC . (exl &&& exl) &&& mulC . (exr &&& exr))
-
+\begin{code}
+magSqr (a,b) = sqr a + sqr b
+NOP
+magSqr = addC . (mulC . (exl &&& exl) &&& mulC . (exr &&& exr))
+\end{code}
 \vspace{-5ex}
 \begin{center}\wpicture{4in}{magSqr}\end{center}
 
@@ -238,11 +246,11 @@ See \href{http://conal.net/papers/compiling-to-categories/}{\emph{Compiling to c
 
 \framet{AD example}{
 \vspace{4ex}
+\begin{code}
+sqr a = a * a
 
-> sqr a = a * a
->
-> sqr = mulC . (id &&& id)
-
+sqr = mulC . (id &&& id)
+\end{code}
 \begin{textblock}{160}[1,0](357,37)
 \begin{tcolorbox}
 \wpicture{2in}{sqr}
@@ -258,11 +266,11 @@ See \href{http://conal.net/papers/compiling-to-categories/}{\emph{Compiling to c
 
 \framet{AD example}{
 \vspace{8ex}
+\begin{code}
+magSqr (a,b) = sqr a + sqr b
 
-> magSqr (a,b) = sqr a + sqr b
->
-> magSqr = addC . (mulC . (exl &&& exl) &&& mulC . (exr &&& exr))
-
+magSqr = addC . (mulC . (exl &&& exl) &&& mulC . (exr &&& exr))
+\end{code}
 \begin{textblock}{160}[1,0](357,37)
 \begin{tcolorbox}
 \wpicture{2in}{magSqr}
@@ -322,7 +330,6 @@ instance Cartesian k => Cartesian (GD k) where
 }
 
 \framet{Numeric operations}{
-
 Specific to (linear) \emph{functions}:
 
 >      mulC  = D (mulC &&& \ (a,b) -> (\ (da,db) -> b*da + a*db))
@@ -367,7 +374,6 @@ class ScalarCat k a where
 }
 
 \framet{Generalized matrix construction}{
-
 \begin{code}
   scale  :: a -> (a `k` a)                              -- $1\times1$
 
@@ -408,7 +414,7 @@ instance (HasV s a, HasV s b) => HasV s (a :* b) where
 }
 
 \framet{Efficiency of composition}{
-\begin{itemize}\itemsep2ex
+\begin{itemize}\itemsep2ex \parskip0.5ex
 \item
   Some orders of composition are more efficient than others.
 \item
@@ -420,10 +426,10 @@ instance (HasV s a, HasV s b) => HasV s (a :* b) where
   \end{itemize}
 \item
   All right composition gives ``forward mode AD'' (FAD).\\
-  Good for scalar domains.
+  Good for low-dimensional domains.
 \item
   All left composition gives ``reverse mode AD'' (RAD).\\
-  Good for scalar codomains.
+  Good for low-dimensional codomains.
 \item
   RAD is a much better choice for gradient-based optimization.
 \end{itemize}
@@ -435,7 +441,9 @@ instance (HasV s a, HasV s b) => HasV s (a :* b) where
 \item CPS-like category:
   \begin{itemize}\itemsep2ex
   \item Represent |a `k` b| by |(b `k` r) -> (a `k` r)|.
-  \item Meaning: |ab --> \ br -> br . ab|.
+  \item Meaning:
+    %% |ab --> (\ br -> br . ab)|.
+    |f --> (. NOP f)|.
   \item Results in left-composition.
   \item Corresponds to a categorical pullback.
   \item Duality/transposition in linear algebra.
@@ -449,30 +457,28 @@ instance (HasV s a, HasV s b) => HasV s (a :* b) where
 }
 
 \framet{One of my favorite papers}{
-  \begin{itemize}\itemsep2ex
+  \begin{itemize}\itemsep2ex \parskip1ex
   \item \href{http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.83.8567}{\emph{Continuation-Based Program Transformation Strategies}} \\ Mitch Wand, 1980, JACM.
   \item Introduce a continuation argument, e.g., |[a] -> [a]|.
   \item Notice the continuations that arise, e.g., |(++ as)|.
   \item Find a \emph{data} representation, e.g., |as :: [a]|
-  \item Identify operation that represents composition, e.g., |(++)|
-  \item Representation will have corresponding associativity property.
+  \item Identify operation that represents composition, e.g., |(++)|\out{, since |(++ bs) . (++ as) == (++ NOP (as ++ bs))|}.
+  \item Will have corresponding associativity property.
   \end{itemize}
 }
 
-
-%% %format dot u v = u <.> v
-%format dot u v = "\langle" u "," v "\rangle"
-
 \framet{Eliminating matrices}{
-\begin{itemize}\itemsep2ex
+\begin{itemize}\itemsep2.5ex
 \item Vector space dual: |U :-* r|, with |U| a vector space over |r|.
 \item If |U| has finite dimension, then |U :-* r =~= U|.
-\item If |f :: U :-* r|, then |f u == dot v u| for some |v|.
+\item For |f :: U :-* r|, |f == dot v| for some |v :: U|.
 \item Gradients are derivatives of functions with scalar codomain.
 \item Represent |a `k` b| by |(b `k` r) -> (a `k` r)| by |b -> a|.
 \item %% Construct |br . der ab a| without building |der ab a|.
  Construct |dot v . der f a| directly, without |dot v| or |der f a|.
-\item Eliminates matrices (often sparse/expensive).
+\item Eliminates matrices (often large \& sparse).
+%% \item Often don't need vector space; semi-module will do.
+\item Semimodule suffices in place of vector space.
 \end{itemize}
 }
 
@@ -480,31 +486,38 @@ instance (HasV s a, HasV s b) => HasV s (a :* b) where
 
 \framet{Dual categories}{
 \begin{code}
-data Dual k a b = Dual (b `k` a)
+newtype Dual k a b = Dual (b `k` a)
 
 instance Category k => Category (Dual k) where
   id   = Dual id
   (.)  = inDual2 (flip (.))
 
 instance CoproductCat k => ProductCat (Dual k) where
-  exl   = Dual inlD
-  exr   = Dual inrD
-  (&&&) = inDual2 (|||)
+  exl    = Dual inlD
+  exr    = Dual inrD
+  (&&&)  = inDual2 (|||)
 
 instance ProductCat k => CoproductPCat (Dual k) where
-  inl   = Dual exl
-  inr   = Dual exr
-  (|||) = inDual2 (&&&)
+  inl    = Dual exl
+  inr    = Dual exr
+  (|||)  = inDual2 (&&&)
 
 instance ScalarCat k s => ScalarCat (Dual k) s where
   scale s = Dual (scale s)
 \end{code}
 }
 
+%format -+> = "\mathbin{\rightarrow^{\!\!+}\!}"
+%% %format -+> = "\rightarrow_{\!\!+}"
+%% %format -+> = "\overset{+}{\longrightarrow}"
+%% %format -+> = "\overset{{}_{+}}{\longrightarrow}"
+%% %format -+> = "\rightarrow\hspace{-3ex}^{\scriptscriptstyle +}\hspace{2ex}"
+%% %format -+> = "\mathbin{\longrightarrow\hspace{-3ex}{+}\hspace{0.7ex}}"
+
 \framet{Reverse-mode AD without tears}{
-
-> type RAD = GD (Dual AdditiveFun)
-
+\begin{code}
+type RAD = GD (Dual (-+>))
+\end{code}
 }
 
 \end{document}
