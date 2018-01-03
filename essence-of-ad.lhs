@@ -685,16 +685,16 @@ type RAD = GD (Dual (-+>))
 \vspace{8ex}
 \begin{center}\hspace{-0.5ex}\wpicture{4.8in}{cosSinProd-adr}\end{center}
 }
-%% \framet{RAD example (gradient)}{
-%% \vspace{2ex}
-%% \begin{textblock}{160}[1,0](357,37)
-%% \begin{tcolorbox}
-%% \wpicture{2in}{cosSinProd}
-%% \end{tcolorbox}
-%% \end{textblock}
-%% \vspace{8ex}
-%% \begin{center}\hspace{-4ex}\wpicture{4in}{cosSinProd-gradr}\end{center}
-%% }
+\framet{RAD example (matrix)}{
+\vspace{2ex}
+\begin{textblock}{160}[1,0](357,37)
+\begin{tcolorbox}
+\wpicture{2in}{cosSinProd}
+\end{tcolorbox}
+\end{textblock}
+\vspace{8.5ex}
+\begin{center}\hspace{-2ex}\wpicture{4.4in}{cosSinProd-adrl}\end{center}
+}
 
 %% HERE: use linear
 
