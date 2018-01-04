@@ -15,7 +15,8 @@
 %include formatting.fmt
 
 \title[]{The simple essence of automatic differentiation}
-\date{January 2018}
+% \date{January 2018}
+\date{\today{} (draft)}
 \institute[]{Target}
 
 \setlength{\itemsep}{2ex}
@@ -586,71 +587,66 @@ instance ScalarCat k s => ScalarCat (Dual k) s where
 }
 
 \framet{Reverse-mode AD without tears}{
+\pause
 \begin{code}
 type RAD = GD (Dual (-+>))
 \end{code}
 }
 
 \framet{RAD example (dual function)}{
-\vspace{2ex}
 \begin{textblock}{160}[1,0](357,37)
 \begin{tcolorbox}
 \wpicture{2in}{add}
 \end{tcolorbox}
 \end{textblock}
-\vspace{4ex}
+\vspace{10ex}
 \begin{center}\hspace{-5ex}\wpicture{4in}{add-adr}\end{center}
 }
 \framet{RAD example (gradient)}{
-\vspace{2ex}
 \begin{textblock}{160}[1,0](357,37)
 \begin{tcolorbox}
 \wpicture{2in}{add}
 \end{tcolorbox}
 \end{textblock}
-\vspace{4ex}
+\vspace{12ex}
 \begin{center}\hspace{-5ex}\wpicture{4in}{add-gradr}\end{center}
 }
 
 \framet{RAD example (dual function)}{
-\vspace{2ex}
 \begin{textblock}{130}[1,0](357,37)
 \begin{tcolorbox}
 \wpicture{1.5in}{fst}
 \end{tcolorbox}
 \end{textblock}
-\vspace{6ex}
+\vspace{8ex}
 \begin{center}\hspace{-8ex}\wpicture{3.7in}{fst-adr}\end{center}
 }
 \framet{RAD example (gradient)}{
-\vspace{2ex}
 \begin{textblock}{130}[1,0](357,37)
 \begin{tcolorbox}
 \wpicture{1.5in}{fst}
 \end{tcolorbox}
 \end{textblock}
-\vspace{5ex}
+\vspace{10ex}
 \begin{center}\hspace{-8ex}\wpicture{2.5in}{fst-gradr}\end{center}
 }
 
 \framet{RAD example (dual function)}{
-\vspace{2ex}
 \begin{textblock}{160}[1,0](357,37)
 \begin{tcolorbox}
 \wpicture{2in}{sqr}
 \end{tcolorbox}
 \end{textblock}
-\vspace{8ex}
-\begin{center}\hspace{-2ex}\wpicture{4.5in}{sqr-adr}\end{center}
+\vspace{12ex}
+\begin{center}\hspace{0ex}\wpicture{4.5in}{sqr-adr}\end{center}
 }
 \framet{RAD example (gradient)}{
-\vspace{2ex}
 \begin{textblock}{160}[1,0](357,37)
 \begin{tcolorbox}
 \wpicture{2in}{sqr}
 \end{tcolorbox}
 \end{textblock}
-\vspace{7ex}
+\vspace{11ex}
 \begin{center}\hspace{-2ex}\wpicture{4in}{sqr-gradr}\end{center}
 }
 
@@ -665,34 +661,31 @@ type RAD = GD (Dual (-+>))
 \begin{center}\hspace{-2ex}\wpicture{4.5in}{magSqr-adr}\end{center}
 }
 \framet{RAD example (gradient)}{
-\vspace{2ex}
 \begin{textblock}{160}[1,0](357,37)
 \begin{tcolorbox}
 \wpicture{2in}{magSqr}
 \end{tcolorbox}
 \end{textblock}
-\vspace{8ex}
+\vspace{10ex}
 \begin{center}\hspace{-4ex}\wpicture{4in}{magSqr-gradr}\end{center}
 }
 
 \framet{RAD example (dual function)}{
-\vspace{2ex}
 \begin{textblock}{160}[1,0](357,37)
 \begin{tcolorbox}
 \wpicture{2in}{cosSinProd}
 \end{tcolorbox}
 \end{textblock}
-\vspace{8ex}
+\vspace{10ex}
 \begin{center}\hspace{-0.5ex}\wpicture{4.8in}{cosSinProd-adr}\end{center}
 }
 \framet{RAD example (matrix)}{
-\vspace{2ex}
 \begin{textblock}{160}[1,0](357,37)
 \begin{tcolorbox}
 \wpicture{2in}{cosSinProd}
 \end{tcolorbox}
 \end{textblock}
-\vspace{8.5ex}
+\vspace{10.5ex}
 \begin{center}\hspace{-2ex}\wpicture{4.4in}{cosSinProd-adrl}\end{center}
 }
 
