@@ -751,11 +751,10 @@ Often described as opposing techniques:
   \item RAD: efficient but tricky to implement.
 \end{itemize}
 \end{itemize}
-\vspace{1ex}
 \pause
-Another view: \emph{AD is SD done by a compiler.}
-
-\vspace{1ex}
+\vspace{2ex}
+Another view: \emph{AD is SD done by a compiler.}\\[2ex]
 Compilers already work symbolically and preserve sharing.
+}
 
 \end{document}
