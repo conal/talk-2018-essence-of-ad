@@ -60,7 +60,7 @@ For scalar domain:
 
 \pause
 
-Now generalize: unique \wow{linear transformation} $T$ such that
+Now generalize: unique linear transformation $T$ such that
 
 $$|lim(epsilon -> 0)(frac(abs (f (x+epsilon) - (f x + T epsilon)))(abs epsilon)) == 0|$$
 
@@ -333,6 +333,8 @@ Each |D| operation just uses corresponding |(:-*)| operation.
 Generalize from |(:-*)| to other cartesian categories.
 }
 
+%format GD = GAD
+
 \framet{Generalized AD}{
 \mathindent-1ex
 \begin{code}
@@ -427,8 +429,6 @@ Types guarantee rectangularity.
 %% %format -+> = "\rightarrow\hspace{-3ex}^{\scriptscriptstyle +}\hspace{2ex}"
 %% %format -+> = "\mathbin{\longrightarrow\hspace{-3ex}{+}\hspace{0.7ex}}"
 
-%format inNew2
-
 \framet{Linear transformations as functions}{
 \vspace{-1.2ex}
 \begin{code}
@@ -467,7 +467,7 @@ instance Num s => ScalarCat (-+>) s where
 \item For gradient-based optimization,
   \begin{itemize}\itemsep2ex
   \item High-dimensional domain.
-  \item Very low-dimensional (1-D) domain.
+  \item Very low-dimensional (1-D) codomain.
   \end{itemize}
 \end{itemize}
 }
@@ -536,6 +536,42 @@ instance (HasV s a, HasV s b) => HasV s (a :* b) where
 \end{itemize}
 }
 
+%format inNew2
+
+%format inAbst2 = inNew2
+%format joinP = join
+%format unjoinP = unjoin
+
+%% Doesn't type-check, because (->) is not in CoproductPCat.
+%% See ConCat.Continuation
+
+%if False
+\framet{Continuation category}{\mathindent0ex
+\vspace{-1.3ex}
+\begin{code}
+newtype Cont k r a b = Cont ((b `k` r) -> (a `k` r))
+
+cont :: Category k => (a `k` b) -> Cont k r a b
+cont f = Cont (. f)
+
+instance Category (Cont k r) where
+  type Ok (Cont k r) = Ok k
+  id = cont id
+  (.) = inAbst2 (flip (.))
+
+instance (ProductCat k, CoproductPCat k) => ProductCat (Cont k r) where
+  exl = cont exl
+  exr = cont exr
+  (&&&) = inAbst2 (\ f g -> (f |||| g) . unjoinP)
+
+instance CoproductPCat k => CoproductPCat (Cont k r) where
+  inlP = cont inlP
+  inrP = cont inrP
+  (||||) = inAbst2 (\ f g -> joinP . (f &&& g))
+\end{code}
+}
+%endif
+
 \framet{One of my favorite papers}{
   \begin{itemize}\itemsep2ex \parskip1ex
   \item \href{http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.83.8567}{\emph{Continuation-Based Program Transformation Strategies}} \\ Mitch Wand, 1980, JACM.
@@ -586,7 +622,7 @@ instance ScalarCat k s => ScalarCat (Dual k) s where
 \end{code}
 }
 
-\framet{Reverse-mode AD without tears}{
+\framet{Reverse-mode AD without tears}{\mathindent1.2in
 \pause
 \begin{code}
 type RAD = GD (Dual (-+>))
@@ -689,6 +725,37 @@ type RAD = GD (Dual (-+>))
 \begin{center}\hspace{-2ex}\wpicture{4.4in}{cosSinProd-adrl}\end{center}
 }
 
-%% HERE: use linear
+\framet{Incremental evaluation}{
+\pause
+\begin{textblock}{140}[1,0](357,37)
+\begin{tcolorbox}
+\wpicture{1.7in}{magSqr}
+\end{tcolorbox}
+\end{textblock}
+\vspace{9.5ex}
+\begin{center}\hspace{-0.5ex}\wpicture{4.8in}{magSqr-andInc}\end{center}
+}
+
+\framet{Symbolic vs automatic differentiation}{
+Often described as opposing techniques:
+\begin{itemize}\itemsep2ex
+\pitem \emph{Symbolic:}
+  \begin{itemize}\itemsep1.5ex
+  \item Apply differentiation rules symbolically.
+  \item Can duplicate much work.
+  \item Needs algebraic manipulation.
+\end{itemize}
+\pitem \emph{Automatic}:
+\begin{itemize}\itemsep1.5ex
+  \item FAD: easy to implement but often inefficient.
+  \item RAD: efficient but tricky to implement.
+\end{itemize}
+\end{itemize}
+\vspace{1ex}
+\pause
+Another view: \emph{AD is SD done by a compiler.}
+
+\vspace{1ex}
+Compilers already work symbolically and preserve sharing.
 
 \end{document}

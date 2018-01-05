@@ -1,0 +1,81 @@
+digraph magSqr_andInc {
+  ranksep=1
+  margin=0
+  compound=true
+  rankdir=LR
+  node [shape=Mrecord]
+  edge [fontsize=8,fontcolor=indigo]
+  bgcolor=transparent
+  nslimit=20
+  subgraph clusterc0 { label=""; color=white; margin=0; c0 [label="{In|{<Out0>|<Out1>}}"] }
+  subgraph clusterc10536 { label=""; color=white; margin=0; c10536 [label="{{<In0>|<In1>}|\×|{<Out0>}}"] }
+  subgraph clusterc10537 { label=""; color=white; margin=0; c10537 [label="{{<In0>|<In1>}|\×|{<Out0>}}"] }
+  subgraph clusterc10538 { label=""; color=white; margin=0; c10538 [label="{{<In0>|<In1>}|+|{<Out0>}}"] }
+  subgraph cluster_12325 {
+    margin=8
+    fontsize=20
+    labeljust=r
+    color=DarkGreen
+    c12141 [label="{{<In0>|<In1>}|\×|{<Out0>}}"]
+    c12231 [label="{{<In0>|<In1>}|\×|{<Out0>}}"]
+    c12140 [label="{{<In0>|<In1>}|\×|{<Out0>}}"]
+    c12230 [label="{{<In0>|<In1>}|\×|{<Out0>}}"]
+    c12321 [label="{{<In0>|<In1>}|+|{<Out0>}}"]
+    c12319 [label="{{<In0>|<In1>}|+|{<Out0>}}"]
+    c12318 [label="{{<In0>|<In1>}|+|{<Out0>}}"]
+    c12043 [label="{In|{<Out0>|<Out1>|<Out2>|<Out3>}}"]
+    c12324 [label="{{<In0>|<In1>}|Out}"]
+    c12142 [label="{{<In0>|<In1>|<In2>}|if|{<Out0>}}"]
+    c12145 [label="{{<In0>|<In1>|<In2>}|if|{<Out0>}}"]
+    c12323 [label="{{<In0>|<In1>|<In2>}|if|{<Out0>}}"]
+    c12232 [label="{{<In0>|<In1>|<In2>}|if|{<Out0>}}"]
+    c12233 [label="{{<In0>|<In1>|<In2>}|if|{<Out0>}}"]
+    c12320 [label="{{<In0>|<In1>|<In2>}|if|{<Out0>}}"]
+    c12322 [label="{{<In0>|<In1>}|\∨|{<Out0>}}"]
+    c0:Out0 -> c12141:In0 []
+    c12043:Out1 -> c12141:In1 []
+    c0:Out1 -> c12231:In0 []
+    c12043:Out3 -> c12231:In1 []
+    c12043:Out1 -> c12140:In0 []
+    c12043:Out1 -> c12140:In1 []
+    c12043:Out3 -> c12230:In0 []
+    c12043:Out3 -> c12230:In1 []
+    c10536:Out0 -> c12321:In0 []
+    c12233:Out0 -> c12321:In1 []
+    c10537:Out0 -> c12319:In0 []
+    c12145:Out0 -> c12319:In1 []
+    c12145:Out0 -> c12318:In0 []
+    c12233:Out0 -> c12318:In1 []
+    c12322:Out0 -> c12324:In0 []
+    c12323:Out0 -> c12324:In1 []
+    c12043:Out0 -> c12142:In0 []
+    c12140:Out0 -> c12142:In1 []
+    c12141:Out0 -> c12142:In2 []
+    c12043:Out0 -> c12145:In0 []
+    c12142:Out0 -> c12145:In1 []
+    c12141:Out0 -> c12145:In2 []
+    c12043:Out0 -> c12323:In0 []
+    c12320:Out0 -> c12323:In1 []
+    c12321:Out0 -> c12323:In2 []
+    c12043:Out2 -> c12232:In0 []
+    c12230:Out0 -> c12232:In1 []
+    c12231:Out0 -> c12232:In2 []
+    c12043:Out2 -> c12233:In0 []
+    c12232:Out0 -> c12233:In1 []
+    c12231:Out0 -> c12233:In2 []
+    c12043:Out2 -> c12320:In0 []
+    c12318:Out0 -> c12320:In1 []
+    c12319:Out0 -> c12320:In2 []
+    c12043:Out0 -> c12322:In0 []
+    c12043:Out2 -> c12322:In1 []
+  }
+  subgraph clusterc12326 { label=""; color=white; margin=0; c12326 [label="{{<In0>|<In1>}|Out}"] }
+  c0:Out0 -> c10536:In0 []
+  c0:Out0 -> c10536:In1 []
+  c0:Out1 -> c10537:In0 []
+  c0:Out1 -> c10537:In1 []
+  c10536:Out0 -> c10538:In0 []
+  c10537:Out0 -> c10538:In1 []
+  c10538:Out0 -> c12326:In0 []
+  c12324 -> c12326:In1 [ltail=cluster_12325]
+}
