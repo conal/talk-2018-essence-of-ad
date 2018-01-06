@@ -65,6 +65,7 @@
 %% %% %format $@ = "\mathbin{\$\!@}"
 
 %format (abs(a)) = "|" a "|"
+%format (norm(a)) = "\lVert" a "\rVert"
 %format lim(w)(b) = "\lim_{"w"}{"b"}"
 %format frac(a)(b) = "\frac{"a"}{"b"}"
 %format `approx` = "\approx"
