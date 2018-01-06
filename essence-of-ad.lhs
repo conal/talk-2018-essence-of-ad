@@ -15,8 +15,8 @@
 %include formatting.fmt
 
 \title[]{The simple essence of automatic differentiation}
-% \date{January 2018}
-\date{\today{} (draft)}
+\date{January 2018}
+% \date{\today{} (draft)}
 \institute[]{Target}
 
 \setlength{\itemsep}{2ex}
@@ -62,7 +62,7 @@ For scalar domain:
 
 Now generalize: unique linear transformation $T$ such that
 
-$$|lim(epsilon -> 0)(frac(abs (f (x+epsilon) - (f x + T epsilon)))(abs epsilon)) == 0|$$
+$$|lim(epsilon -> 0)(frac(norm (f (x+epsilon) - (f x + T epsilon)))(norm epsilon)) == 0|$$
 
 \pause\vspace{3ex}
 
@@ -72,7 +72,7 @@ $$|lim(epsilon -> 0)(frac(abs (f (x+epsilon) - (f x + T epsilon)))(abs epsilon))
 
 %% Captures all ``partial derivatives'' for all dimensions.
 
-See \emph{Calculus on Manifolds} by Michael Spivak.
+See \href{https://archive.org/details/SpivakM.CalculusOnManifolds_201703}{\emph{Calculus on Manifolds}} by Michael Spivak.
 
 }
 
@@ -309,10 +309,7 @@ cosSinProd (x,y) = (cos z, sin z) where z = x * y
 \mathindent-1ex
 \begin{code}
 data D a b = D (a -> b :* (a :-* b))
-\end{code}
-\pause
-\vspace{-6ex}
-\begin{code}
+
 linearD f = D (f &&& const f)
 
 instance Category D where
@@ -328,8 +325,7 @@ instance Cartesian D where
 \vspace{0.5ex}
 \pause
 
-Each |D| operation just uses corresponding |(:-*)| operation.
-
+Each |D| operation just uses corresponding |(:-*)| operation.\\[2ex]
 Generalize from |(:-*)| to other cartesian categories.
 }
 
@@ -340,15 +336,15 @@ Generalize from |(:-*)| to other cartesian categories.
 \begin{code}
 data GD k a b = D (a -> b :* (a `k` b))
 
-linearD f = D (f &&& const f)
+linearD f f' = D (f &&& const f')
 
 instance Category k => Category (GD k) where
-  id = linearD id
+  id = linearD id id
   D g . D f = D (\ a -> let { (b,f') = f a ; (c,g') = g b } in (c, g' . f'))
 
 instance Cartesian k => Cartesian (GD k) where
-  exl  = linearD exl
-  exr  = linearD exr
+  exl  = linearD exl exl
+  exr  = linearD exr exr
   D f &&& D g = D (\ a -> let { (b,f') = f a ; (c,g') = g a } in ((b,c), f' &&& g'))
 \end{code}
 
@@ -405,6 +401,8 @@ class ScalarCat k a where
 }
 
 \framet{Core vocabulary}{
+Sufficient to build arbitrary matrices:
+\vspace{3ex}
 \begin{code}
   scale  :: a -> (a `k` a)                              -- $1\times1$
 
@@ -413,10 +411,7 @@ class ScalarCat k a where
   (&&&)  :: (a `k` c) -> (a `k` d) -> (a `k` (c :* d))  -- vertical juxt
 \end{code}
 
-\vspace{2ex}
-Sufficient to build arbitrary matrices.
-
-\vspace{4ex}
+\vspace{3ex}
 Types guarantee rectangularity.
 }
 
@@ -528,12 +523,8 @@ instance (HasV s a, HasV s b) => HasV s (a :* b) where
   \item Corresponds to a categorical pullback.
   \item Duality/transposition in linear algebra.
   \end{itemize}
-\pitem We've seen this trick before:
-  \begin{itemize}\itemsep2ex
-  \item Transforming naive |reverse| from quadratic to linear.
-  \item Lists generalize to monoids, and monoids to categories.
-  \end{itemize}
 \end{itemize}
+\vspace{13.8ex}
 }
 
 %format inNew2
@@ -545,14 +536,14 @@ instance (HasV s a, HasV s b) => HasV s (a :* b) where
 %% Doesn't type-check, because (->) is not in CoproductPCat.
 %% See ConCat.Continuation
 
-%if False
+%if True
 \framet{Continuation category}{\mathindent0ex
 \vspace{-1.3ex}
 \begin{code}
 newtype Cont k r a b = Cont ((b `k` r) -> (a `k` r))
 
 cont :: Category k => (a `k` b) -> Cont k r a b
-cont f = Cont (. f)
+cont f = Cont (. NOP f)
 
 instance Category (Cont k r) where
   type Ok (Cont k r) = Ok k
@@ -572,14 +563,33 @@ instance CoproductPCat k => CoproductPCat (Cont k r) where
 }
 %endif
 
+\framet{Left-associating composition (RAD)}{
+\begin{itemize}\itemsep2ex \parskip1ex
+\item CPS-like category:
+  \begin{itemize}\itemsep2ex
+  \item Represent |a `k` b| by |(b `k` r) -> (a `k` r)|.
+  \item Meaning:
+    |f --> (. NOP f)|.
+  \item Results in left-composition.
+  \item Corresponds to a categorical pullback.
+  \item Duality/transposition in linear algebra.
+  \end{itemize}
+\pitem We've seen this trick before:
+  \begin{itemize}\itemsep2ex
+  \item Transforming naive |reverse| from quadratic to linear.
+  \item Lists generalize to monoids, and monoids to categories.
+  \end{itemize}
+\end{itemize}
+}
+
 \framet{One of my favorite papers}{
   \begin{itemize}\itemsep2ex \parskip1ex
   \item \href{http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.83.8567}{\emph{Continuation-Based Program Transformation Strategies}} \\ Mitch Wand, 1980, JACM.
   \item Introduce a continuation argument, e.g., |[a] -> [a]|.
-  \item Notice the continuations that arise, e.g., |(++ as)|.
+  \item Notice the continuations that arise, e.g., |(++ NOP as)|.
   \pitem Find a \emph{data} representation, e.g., |as :: [a]|
   \item Identify associative operation that represents composition,\\
-  e.g., |(++)| , since |(++ bs) . (++ as) == (++ NOP (as ++ bs))|.
+  e.g., |(++)| , since |(++ NOP bs) . (++ NOP as) == (++ NOP (as ++ bs))|.
   \end{itemize}
 }
 
@@ -739,7 +749,7 @@ type RAD = GD (Dual (-+>))
 \framet{Symbolic vs automatic differentiation}{
 Often described as opposing techniques:
 \begin{itemize}\itemsep2ex
-\pitem \emph{Symbolic:}
+\pitem \emph{Symbolic}:
   \begin{itemize}\itemsep1.5ex
   \item Apply differentiation rules symbolically.
   \item Can duplicate much work.
@@ -756,5 +766,20 @@ Often described as opposing techniques:
 Another view: \emph{AD is SD done by a compiler.}\\[2ex]
 Compilers already work symbolically and preserve sharing.
 }
+
+%format ### = ||||
+
+\framet{Conclusions}{
+\begin{itemize}\itemsep3ex
+\item Simple AD algorithm, specializing to forward, reverse, mixed.
+\item No graphs; no partial derivatives.
+\item One rule per combining form: |(.)|, |(&&&)|, |(###)|.
+%% \item RAD as simple as FAD but very efficient for gradient problems.
+\item Reverse mode via simple, general dual construction.
+\item Generalizes to categories other than linear maps.
+\item Differentiate regular Haskell code (via plugin).
+\end{itemize}
+}
+
 
 \end{document}
