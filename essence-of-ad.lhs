@@ -565,6 +565,13 @@ instance CoproductPCat k => CoproductPCat (Cont k r) where
 }
 %endif
 
+\framet{Reverse-mode AD without tears}{\mathindent1.2in
+\pause
+\begin{code}
+type RAD s = GD (Cont (L s))
+\end{code}
+}
+
 \framet{Left-associating composition (RAD)}{
 \begin{itemize}\itemsep2ex \parskip1ex
 \item CPS-like category:
@@ -635,11 +642,7 @@ instance ScalarCat k s => ScalarCat (Dual k) s where
 \end{code}
 }
 
-\framet{Reverse-mode AD without tears}{\mathindent1.2in
-\pause
-\begin{code}
-type RAD s = GD (Cont (L s))
-\end{code}
+\framet{Backpropagation}{\mathindent1.2in
 \pause
 \begin{code}
 type Backprop = GD (Dual (-+>))
@@ -655,7 +658,7 @@ type Backprop = GD (Dual (-+>))
 \vspace{10ex}
 \begin{center}\hspace{-5ex}\wpicture{4in}{add-adr}\end{center}
 }
-\framet{RAD example (gradient)}{
+\framet{RAD example (dual vector)}{
 \begin{textblock}{160}[1,0](357,37)
 \begin{tcolorbox}
 \wpicture{2in}{add}
@@ -663,6 +666,25 @@ type Backprop = GD (Dual (-+>))
 \end{textblock}
 \vspace{12ex}
 \begin{center}\hspace{-5ex}\wpicture{4in}{add-gradr}\end{center}
+}
+
+\framet{RAD example (dual function)}{
+\begin{textblock}{160}[1,0](357,37)
+\begin{tcolorbox}
+\wpicture{2in}{dup}
+\end{tcolorbox}
+\end{textblock}
+\vspace{13ex}
+\begin{center}\hspace{-5ex}\wpicture{4.5in}{dup-adr}\end{center}
+}
+\framet{RAD example (vector)}{
+\begin{textblock}{160}[1,0](357,37)
+\begin{tcolorbox}
+\wpicture{2in}{dup}
+\end{tcolorbox}
+\end{textblock}
+\vspace{12ex}
+\begin{center}\hspace{-5ex}\wpicture{2.5in}{dup-gradr}\end{center}
 }
 
 \framet{RAD example (dual function)}{
@@ -674,7 +696,7 @@ type Backprop = GD (Dual (-+>))
 \vspace{8ex}
 \begin{center}\hspace{-8ex}\wpicture{3.7in}{fst-adr}\end{center}
 }
-\framet{RAD example (gradient)}{
+\framet{RAD example (dual vector)}{
 \begin{textblock}{130}[1,0](357,37)
 \begin{tcolorbox}
 \wpicture{1.5in}{fst}
@@ -693,7 +715,7 @@ type Backprop = GD (Dual (-+>))
 \vspace{12ex}
 \begin{center}\hspace{0ex}\wpicture{4.5in}{sqr-adr}\end{center}
 }
-\framet{RAD example (gradient)}{
+\framet{RAD example (dual vector)}{
 \begin{textblock}{160}[1,0](357,37)
 \begin{tcolorbox}
 \wpicture{2in}{sqr}
@@ -713,7 +735,7 @@ type Backprop = GD (Dual (-+>))
 \vspace{4ex}
 \begin{center}\hspace{-2ex}\wpicture{4.5in}{magSqr-adr}\end{center}
 }
-\framet{RAD example (gradient)}{
+\framet{RAD example (dual vector)}{
 \begin{textblock}{160}[1,0](357,37)
 \begin{tcolorbox}
 \wpicture{2in}{magSqr}
