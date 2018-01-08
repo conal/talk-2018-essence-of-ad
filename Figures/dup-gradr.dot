@@ -1,0 +1,16 @@
+digraph dup_gradr {
+  margin=0
+  compound=true
+  rankdir=LR
+  node [shape=Mrecord]
+  edge [fontsize=8,fontcolor=indigo]
+  bgcolor=transparent
+  nslimit=20
+  c0 [label="{In|{<Out0>}}"]
+  c29 [label="{1.0|{<Out0>}}"]
+  c46 [label="{{<In0>|<In1>|<In2>|<In3>}|Out}"]
+  c0:Out0 -> c46:In0 []
+  c0:Out0 -> c46:In1 []
+  c29:Out0 -> c46:In2 []
+  c29:Out0 -> c46:In3 []
+}
