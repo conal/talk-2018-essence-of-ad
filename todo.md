@@ -1,10 +1,8 @@
 ## To do
 
-*   Maybe show CPS-like category (`ConCat.Continuation`, in progress).
 *   Perhaps material from second set of notes
 *   `CoproductPCat` for `GD k`.
     The "cocartesian rule", a peer to the chain and cartesian rules.
-*   Linear maps via representable functors.
 
 ## Did
 
@@ -20,3 +18,6 @@
 *   Get the talk scheduled at work. Wed 3pm.
 *   Add `Incremental` to talk.
 *   Remarks on symbolic vs automatic differentiation
+*   Maybe show CPS-like category (`ConCat.Continuation`, in progress).
+*   Conclusions: FAD & RAD ...
+*   Linear maps via representable functors.

@@ -53,9 +53,12 @@
 %format C = "\mathbb{C}"
 
 %format ^+^ = "+"
+%% %format ^+^ = "\mathbf{+}"
+%% %format ^+^ = "\bplus"
 %format *^ = " \cdot "
 
 %format zeroV = 0
+%% %format zeroV = "\bzero"
 %format negateV = negate
 
 %% %format <.> = "\mathbin{<\!\!\! \cdot \!\!\!>}"
@@ -76,7 +79,6 @@
 %format +++ = "\!+\!"
 
 %format :-* = "\multimap"
-
 
 %format Par1 = "\Varid{Id}"
 %format unPar1 = "\Varid{unId}"
