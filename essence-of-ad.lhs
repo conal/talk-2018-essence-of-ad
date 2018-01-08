@@ -528,7 +528,8 @@ instance ScalarCat   (L s) s  where ...
   \item Results in left-composition.
   \item Initialize with |id :: r `k` r|.
   \item Corresponds to a categorical pullback.
-  \item Duality/transposition in linear algebra.
+  \item Construct |dot v . der f a| directly, without\out{ |dot v| or} |der f a|.\\
+         %% Often eliminates large \& sparse matrices.
   \end{itemize}
 \end{itemize}
 \vspace{13.8ex}
@@ -544,7 +545,7 @@ instance ScalarCat   (L s) s  where ...
 newtype Cont k r a b = Cont ((b `k` r) -> (a `k` r))
 
 cont :: Category k => (a `k` b) -> Cont k r a b
-cont f = Cont (. NOP f)
+cont f = Cont (. NOP f)   -- Optimize uses
 
 instance Category (Cont k r) where
   type Ok (Cont k r) = Ok k
@@ -574,7 +575,8 @@ instance CoproductPCat k => CoproductPCat (Cont k r) where
   \item Results in left-composition.
   \item Initialize with |id :: r `k` r|.
   \item Corresponds to a categorical pullback.
-  \item Duality/transposition in linear algebra.
+  \item Construct |dot v . der f a| directly, without\out{ |dot v| or} |der f a|.\\
+        %% Often eliminates large \& sparse matrices.
   \end{itemize}
 \pitem We've seen this trick before:
   \begin{itemize}\itemsep2ex
@@ -585,7 +587,7 @@ instance CoproductPCat k => CoproductPCat (Cont k r) where
 }
 
 \framet{One of my favorite papers}{
-  \begin{itemize}\itemsep2ex \parskip1ex
+  \begin{itemize}\itemsep3ex \parskip1ex
   \item \href{http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.83.8567}{\emph{Continuation-Based Program Transformation Strategies}} \\ Mitch Wand, 1980, JACM.
   \item Introduce a continuation argument, e.g., |[a] -> [a]|.
   \item Notice the continuations that arise, e.g., |(++ NOP as)|.
@@ -597,16 +599,14 @@ instance CoproductPCat k => CoproductPCat (Cont k r) where
 
 \framet{Duality}{
 \pause
-\begin{itemize}\itemsep2.5ex
+\begin{itemize}\itemsep3ex
 \item Vector space dual: |u :-* r|, with |u| a vector space over |r|.
 \item If |u| has finite dimension, then |u :-* r =~= u|.
 \item For |f :: u :-* r|, |f == dot v| for some |v :: u|.
 \item Gradients are derivatives of functions with scalar codomain.
-\item Represent |a `k` b| by |(b `k` r) -> (a `k` r)| by |b -> a|.
+\item Represent |a :-* b| by |(b :-* r) -> (a :-* r)| by |b -> a|.
 \pitem \emph{Ideal} for extracting gradient vector.
        Just apply to |1| (|id|).
-\pitem Construct |dot v . der f a| directly, without |dot v| or |der f a|.\\
-       Eliminates matrices (often large \& sparse).
 %% \item Often don't need vector space; semi-module will do.
 %% \item Semimodule suffices in place of vector space.
 \end{itemize}
@@ -636,13 +636,13 @@ instance ScalarCat k s => ScalarCat (Dual k) s where
 }
 
 \framet{Reverse-mode AD without tears}{\mathindent1.2in
-%% \pause
-%% \begin{code}
-%% type RAD s = GD (Cont (L s))
-%% \end{code}
 \pause
 \begin{code}
-type RAD = GD (Dual (-+>))
+type RAD s = GD (Cont (L s))
+\end{code}
+\pause
+\begin{code}
+type Backprop = GD (Dual (-+>))
 \end{code}
 }
 
@@ -783,7 +783,7 @@ Compilers already work symbolically and preserve sharing.
 \item One rule per combining form: |(.)|, |(&&&)|, |(###)|.
 %% \item RAD as simple as FAD but very efficient for gradient problems.
 \item Reverse mode via simple, general dual construction.
-\item Generalizes to categories other than linear maps.
+\item Generalizes to derivative categories other than linear maps.
 \item Differentiate regular Haskell code (via plugin).
 \end{itemize}
 }
