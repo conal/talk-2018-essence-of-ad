@@ -1,6 +1,5 @@
 ## To do
 
-*   Perhaps material from second set of notes
 *   `CoproductPCat` for `GD k`.
     The "cocartesian rule", a peer to the chain and cartesian rules.
 
@@ -21,3 +20,4 @@
 *   Maybe show CPS-like category (`ConCat.Continuation`, in progress).
 *   Conclusions: FAD & RAD ...
 *   Linear maps via representable functors.
+*   Perhaps material from second set of notes
