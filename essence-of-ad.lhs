@@ -40,41 +40,36 @@
 \date{Jan 2018}
 
 \framet{What's a derivative?}{
+\begin{itemize}\itemsep4ex
+\pitem Number
+\pitem Vector
+\pitem Covector
+\pitem Matrix
+\pitem Higher derivatives
+\end{itemize}
 
-For scalar domain: $$|der f x = lim(epsilon -> 0)(frac(f (x+epsilon) - f x) epsilon)|$$
-
-\ 
-\pause
-Redefine: unique $v$ such that
- $$ |lim(epsilon -> 0)(frac(f (x+epsilon) - f x) epsilon) - v == 0| $$
-
-\pause
-Equivalently,
- $$ |lim(epsilon -> 0)(frac(f (x+epsilon) - (f x + epsilon *^ v)) epsilon) == 0| $$
-
+\vspace{2ex}\pause
+Chain rule for each.
 }
 
-\framet{What's a derivative?}{
-For scalar domain:
- $$ |lim(epsilon -> 0)(frac(f (x+epsilon) - (f x + epsilon *^ v)) epsilon) == 0| $$
 
+\framet{What's a derivative?}{\mathindent20ex
 \pause
-
-Now generalize: unique linear transformation $T$ such that
-
-$$|lim(epsilon -> 0)(frac(norm (f (x+epsilon) - (f x + T epsilon)))(norm epsilon)) == 0|$$
-
-\pause\vspace{3ex}
-
-\wow{Derivatives are linear transformations:}
+\vspace{2ex}
 
 > der :: (a -> b) -> (a -> (a :-* b))
 
-%% Captures all ``partial derivatives'' for all dimensions.
+\pause
+
+where
+
+$$|lim(epsilon -> 0)(frac(norm (f (a+epsilon) - (f a + T epsilon)))(norm epsilon)) == 0|$$
+
+\vspace{8ex}
 
 See \href{https://archive.org/details/SpivakM.CalculusOnManifolds_201703}{\emph{Calculus on Manifolds}} by Michael Spivak.
-
 }
+
 
 \framet{Composition}{
 
@@ -122,6 +117,7 @@ Often much work in common to |f| and |der f|.
 
 \framet{Linear functions}{
 
+\pause
 Linear functions are their own perfect linear approximations.
 
 \begin{code}
@@ -159,8 +155,6 @@ For linear functions |f|,
 %% %format `k` = "\rightsquigarrow"
 %% %format k = "(\rightsquigarrow)"
 
-
-
 \framet{Abstract algebra for functions}{
 \begin{code}
 class Category k where
@@ -172,17 +166,17 @@ class Category k => ProductCat k where
   exl    ::  (Prod k a b) `k` a
   exr    ::  (Prod k a b) `k` b
   (&&&)  ::  (a `k` c)  -> (a `k` d)  -> (a `k` (Prod k c d))
-
-class Category k => CoproductCat k where
-  type Coprod k a b
-  inl    ::  a `k` (Coprod k a b)
-  inr    ::  b `k` (Coprod k a b)
-  (|||)  ::  (a `k` c)  -> (b `k` c)  -> ((Coprod k a b) `k` c)
 \end{code}
 
-\vspace{-1ex}
+\vspace{6ex}
 Plus laws and classes for arithmetic etc.
 }
+
+%% class Category k => CoproductCat k where
+%%   type Coprod k a b
+%%   inl    ::  a `k` (Coprod k a b)
+%%   inr    ::  b `k` (Coprod k a b)
+%%   (|||)  ::  (a `k` c)  -> (b `k` c)  -> ((Coprod k a b) `k` c)
 
 %format cosC = cos
 %format sinC = sin
@@ -228,6 +222,7 @@ cosSinProd :: Floating a => a :* a -> a :* a
 cosSinProd (x,y) = (cos z, sin z) where z = x * y
 \end{code}
 
+\pause
 In categorical vocabulary:
 
 \begin{code}
@@ -451,7 +446,7 @@ instance CoproductPCat (-+>) where
   inrP   = AddFun (zeroV,)
   (||||) = inNew2 (\ f g (x,y) -> f x ^+^ g y)
 
-instance Num s => ScalarCat (-+>) s where
+instance Multiplicative s => ScalarCat (-+>) s where
   scale s = AddFun (s NOP *)
 \end{code}
 }
@@ -478,7 +473,7 @@ instance Num s => ScalarCat (-+>) s where
 %% %format toV = "\Varid{to}_V"
 %% %format unV = "\Varid{un}_V"
 
-\framet{A ``matrix'' representation}{\mathindent2ex
+\framet{Generalized matrices}{\mathindent2ex
 \vspace{-1.3ex}
 \begin{code}
 newtype L s a b = L (V s b (V s a s))
@@ -488,11 +483,15 @@ class HasV s a where
   toV  :: a -> V s a s
   unV  :: V s a s -> a
 
-instance Category    (L s)    where ...
+NOP
 
-instance ProductCat  (L s)    where ...
+instance Category       (L s)    where ...
 
-instance ScalarCat   (L s) s  where ...
+instance ProductCat     (L s)    where ...
+
+instance CoproductPCat  (L s)    where ...
+
+instance ScalarCat      (L s) s  where ...
 \end{code}
 }
 
@@ -528,7 +527,7 @@ instance ScalarCat   (L s) s  where ...
   \item Results in left-composition.
   \item Initialize with |id :: r `k` r|.
   \item Corresponds to a categorical pullback.
-  \item Construct |dot v . der f a| directly, without\out{ |dot v| or} |der f a|.\\
+  \item Construct |h . der f a| directly, without |der f a|.\\
          %% Often eliminates large \& sparse matrices.
   \end{itemize}
 \end{itemize}
@@ -582,7 +581,7 @@ type RAD s = GD (Cont (L s))
   \item Results in left-composition.
   \item Initialize with |id :: r `k` r|.
   \item Corresponds to a categorical pullback.
-  \item Construct |dot v . der f a| directly, without\out{ |dot v| or} |der f a|.\\
+  \item Construct |h . der f a| directly, without |der f a|.\\
         %% Often eliminates large \& sparse matrices.
   \end{itemize}
 \pitem We've seen this trick before:
