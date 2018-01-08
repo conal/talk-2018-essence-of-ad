@@ -45,18 +45,18 @@ For scalar domain: $$|der f x = lim(epsilon -> 0)(frac(f (x+epsilon) - f x) epsi
 
 \ 
 \pause
-Redefine: unique scalar $s$ such that
- $$ |lim(epsilon -> 0)(frac(f (x+epsilon) - f x) epsilon) - s == 0| $$
+Redefine: unique $v$ such that
+ $$ |lim(epsilon -> 0)(frac(f (x+epsilon) - f x) epsilon) - v == 0| $$
 
 \pause
 Equivalently,
- $$ |lim(epsilon -> 0)(frac(f (x+epsilon) - (f x + s *^ epsilon)) epsilon) == 0| $$
+ $$ |lim(epsilon -> 0)(frac(f (x+epsilon) - (f x + epsilon *^ v)) epsilon) == 0| $$
 
 }
 
 \framet{What's a derivative?}{
 For scalar domain:
- $$ |lim(epsilon -> 0)(frac(f (x+epsilon) - (f x + s *^ epsilon)) epsilon) == 0| $$
+ $$ |lim(epsilon -> 0)(frac(f (x+epsilon) - (f x + epsilon *^ v)) epsilon) == 0| $$
 
 \pause
 
@@ -110,6 +110,7 @@ Chain rule:
 
 \ 
 
+\pause
 To fix, combine regular result with derivative:
 \begin{code}
 andDer :: (a -> b) -> (a -> (b :* (a :-* b)))
@@ -366,10 +367,10 @@ Specific to (linear) \emph{functions}:
 Rephrase:
 
 \begin{code}
-scale :: Multiplicative a => a -> (a -> a)
+scale :: Multiplicative a => a -> (a :-* a)
 scale u = \ v -> u * v
 
-(||||) :: Additive c => (a -> c) -> (b -> c) -> ((a :* b) -> c)
+(||||) :: Additive c => (a :-* c) -> (b :-* c) -> ((a :* b) :-* c)
 f |||| g = \ (a,b) -> f a ^+^ g b
 \end{code}
 
@@ -401,7 +402,7 @@ class ScalarCat k a where
 }
 
 \framet{Core vocabulary}{
-Sufficient to build arbitrary matrices:
+Sufficient to build arbitrary ``matrices'':
 \vspace{3ex}
 \begin{code}
   scale  :: a -> (a `k` a)                              -- $1\times1$
@@ -424,6 +425,12 @@ Types guarantee rectangularity.
 %% %format -+> = "\rightarrow\hspace{-3ex}^{\scriptscriptstyle +}\hspace{2ex}"
 %% %format -+> = "\mathbin{\longrightarrow\hspace{-3ex}{+}\hspace{0.7ex}}"
 
+%format inNew2
+
+%format inAbst2 = inNew2
+%format joinP = join
+%format unjoinP = unjoin
+
 \framet{Linear transformations as functions}{
 \vspace{-1.2ex}
 \begin{code}
@@ -440,8 +447,8 @@ instance ProductCat (-+>) where
   (&&&)  = inNew2 (&&&)
 
 instance CoproductPCat (-+>) where
-  inlP   = AddFun (,zero)
-  inrP   = AddFun (zero,)
+  inlP   = AddFun (,zeroV)
+  inrP   = AddFun (zeroV,)
   (||||) = inNew2 (\ f g (x,y) -> f x ^+^ g y)
 
 instance Num s => ScalarCat (-+>) s where
@@ -458,6 +465,7 @@ instance Num s => ScalarCat (-+>) s where
   \begin{itemize}\itemsep2ex
   \item Make $n$ passes.
   \item Each pass works on $n$-D sparse (``one-hot'') input.
+  \item Very inefficient.
   \end{itemize}
 \item For gradient-based optimization,
   \begin{itemize}\itemsep2ex
@@ -467,7 +475,11 @@ instance Num s => ScalarCat (-+>) s where
 \end{itemize}
 }
 
+%% %format toV = "\Varid{to}_V"
+%% %format unV = "\Varid{un}_V"
+
 \framet{A ``matrix'' representation}{\mathindent2ex
+\vspace{-1.3ex}
 \begin{code}
 newtype L s a b = L (V s b (V s a s))
 
@@ -476,37 +488,31 @@ class HasV s a where
   toV  :: a -> V s a s
   unV  :: V s a s -> a
 
-instance HasV Double Double where
-  type V Double Double = Par1
-  toV  = Par1
-  unV  = unPar1
+instance Category    (L s)    where ...
 
-instance (HasV s a, HasV s b) => HasV s (a :* b) where
-  type V s (a :* b) = V s a :*: V s b
-  toV (a , b)    = toV a :*: toV b
-  unV (f :*: g)  = (unV f,unV g)
+instance ProductCat  (L s)    where ...
+
+instance ScalarCat   (L s) s  where ...
 \end{code}
 }
 
 \framet{Efficiency of composition}{
 \begin{itemize}\itemsep2ex \parskip0.5ex
 \item
-  Some orders of composition are more efficient than others.
-\item
-  Fortunately, arrow composition is associative:
+  Arrow composition is associative.
+\item 
+  Some associations are more efficient than others, so
   \begin{itemize}\itemsep2ex
   \item Associate optimally.
   \item Equivalent to \emph{matrix chain multiplication} --- $O(n \log n)$.
   \item Choice determined by \emph{types}, i.e., compile-time information.
   \end{itemize}
 \pitem
-  All-right composition gives ``forward mode AD'' (FAD).\\
-  Good for low-dimensional domains.
+  All-right: ``forward mode AD'' (FAD).
 \item
-  All-left composition gives ``reverse mode AD'' (RAD).\\
-  Good for low-dimensional codomains.
+  All-left: ``reverse mode AD'' (RAD).
 \item
-  RAD is a much better choice for gradient-based optimization.
+  RAD is much better for gradient-based optimization.
 \end{itemize}
 }
 
@@ -520,18 +526,13 @@ instance (HasV s a, HasV s b) => HasV s (a :* b) where
     %% |ab --> (\ br -> br . ab)|.
     |f --> (. NOP f)|.
   \item Results in left-composition.
+  \item Initialize with |id :: r `k` r|.
   \item Corresponds to a categorical pullback.
   \item Duality/transposition in linear algebra.
   \end{itemize}
 \end{itemize}
 \vspace{13.8ex}
 }
-
-%format inNew2
-
-%format inAbst2 = inNew2
-%format joinP = join
-%format unjoinP = unjoin
 
 %% Doesn't type-check, because (->) is not in CoproductPCat.
 %% See ConCat.Continuation
@@ -571,6 +572,7 @@ instance CoproductPCat k => CoproductPCat (Cont k r) where
   \item Meaning:
     |f --> (. NOP f)|.
   \item Results in left-composition.
+  \item Initialize with |id :: r `k` r|.
   \item Corresponds to a categorical pullback.
   \item Duality/transposition in linear algebra.
   \end{itemize}
@@ -594,14 +596,15 @@ instance CoproductPCat k => CoproductPCat (Cont k r) where
 }
 
 \framet{Duality}{
+\pause
 \begin{itemize}\itemsep2.5ex
-\item Vector space dual: |U :-* r|, with |U| a vector space over |r|.
-\item If |U| has finite dimension, then |U :-* r =~= U|.
-\item For |f :: U :-* r|, |f == dot v| for some |v :: U|.
+\item Vector space dual: |u :-* r|, with |u| a vector space over |r|.
+\item If |u| has finite dimension, then |u :-* r =~= u|.
+\item For |f :: u :-* r|, |f == dot v| for some |v :: u|.
 \item Gradients are derivatives of functions with scalar codomain.
 \item Represent |a `k` b| by |(b `k` r) -> (a `k` r)| by |b -> a|.
 \pitem \emph{Ideal} for extracting gradient vector.
-       Just apply to |1|.
+       Just apply to |1| (|id|).
 \pitem Construct |dot v . der f a| directly, without |dot v| or |der f a|.\\
        Eliminates matrices (often large \& sparse).
 %% \item Often don't need vector space; semi-module will do.
@@ -633,6 +636,10 @@ instance ScalarCat k s => ScalarCat (Dual k) s where
 }
 
 \framet{Reverse-mode AD without tears}{\mathindent1.2in
+%% \pause
+%% \begin{code}
+%% type RAD s = GD (Cont (L s))
+%% \end{code}
 \pause
 \begin{code}
 type RAD = GD (Dual (-+>))
