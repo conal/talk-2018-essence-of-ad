@@ -2,7 +2,7 @@
 
 An [invited talk for PEPM 2018](https://popl18.sigplan.org/track/PEPM-2018#Invited-Talks).
 
-See PDF [here](http://conal.net/talks/simple-essence-of-automatic-differentiation.pdf).
+See PDF [here](http://conal.net/talks/simple-essence-of-automatic-differentiation.pdf) (529K).
 
 ### Abstract
 
