@@ -131,7 +131,9 @@ For linear functions |f|,
 
 > andDer f a = (f a, f)
 
-%% > andDer f = f &&& const f
+i.e.,
+
+> andDer f = f &&& const f
 
 }
 
@@ -161,6 +163,7 @@ class Category k where
   id   :: a `k` a
   (.)  :: (b `k` c) -> (a `k` b) -> (a `k` c)
 
+NOP
 class Category k => ProductCat k where
   type Prod k a b
   exl    ::  (Prod k a b) `k` a
@@ -168,7 +171,7 @@ class Category k => ProductCat k where
   (&&&)  ::  (a `k` c)  -> (a `k` d)  -> (a `k` (Prod k c d))
 \end{code}
 
-\vspace{6ex}
+\vspace{3ex}
 Plus laws and classes for arithmetic etc.
 }
 
@@ -187,7 +190,7 @@ Plus laws and classes for arithmetic etc.
 \framet{Simple automatic differentiation}{
 \mathindent-1ex
 \begin{code}
-data D a b = D (a -> b :* (a :-* b))
+newtype D a b = D (a -> b :* (a :-* b))
 \end{code}
 \pause
 \vspace{-4ex}
@@ -304,7 +307,7 @@ cosSinProd (x,y) = (cos z, sin z) where z = x * y
 \framet{Generalizing AD}{
 \mathindent-1ex
 \begin{code}
-data D a b = D (a -> b :* (a :-* b))
+newtype D a b = D (a -> b :* (a :-* b))
 
 linearD f = D (f &&& const f)
 
@@ -330,7 +333,7 @@ Generalize from |(:-*)| to other cartesian categories.
 \framet{Generalized AD}{
 \mathindent-1ex
 \begin{code}
-data GD k a b = D (a -> b :* (a `k` b))
+newtype GD k a b = D (a -> b :* (a `k` b))
 
 linearD f f' = D (f &&& const f')
 
@@ -342,9 +345,12 @@ instance Cartesian k => Cartesian (GD k) where
   exl  = linearD exl exl
   exr  = linearD exr exr
   D f &&& D g = D (\ a -> let { (b,f') = f a ; (c,g') = g a } in ((b,c), f' &&& g'))
-\end{code}
 
-\vspace{8ex}
+instance NumCat D where
+  negateC = linearD negateC negateC
+  addC  = linearD addC addC
+  mulC  = ??
+\end{code}
 }
 
 %format inlP = inl
@@ -371,7 +377,7 @@ f |||| g = \ (a,b) -> f a ^+^ g b
 
 Now
 
->      mulC  = D (mulC &&& (scale b |||| scale a))
+>      mulC  = D (mulC &&& (\ (a,b) -> scale b |||| scale a))
 
 }
 
@@ -394,21 +400,6 @@ class Category k => CoproductCat k where
 class ScalarCat k a where
   scale :: a -> (a `k` a)
 \end{code}
-}
-
-\framet{Core vocabulary}{
-Sufficient to build arbitrary ``matrices'':
-\vspace{3ex}
-\begin{code}
-  scale  :: a -> (a `k` a)                              -- $1\times1$
-
-  (|||)  :: (a `k` c) -> (b `k` c) -> ((a :* b) `k` c)  -- horizontal juxt
-
-  (&&&)  :: (a `k` c) -> (a `k` d) -> (a `k` (c :* d))  -- vertical juxt
-\end{code}
-
-\vspace{3ex}
-Types guarantee rectangularity.
 }
 
 %format Double = R
@@ -493,6 +484,21 @@ instance CoproductPCat  (L s)    where ...
 
 instance ScalarCat      (L s) s  where ...
 \end{code}
+}
+
+\framet{Core vocabulary}{
+Sufficient to build arbitrary ``matrices'':
+\vspace{3ex}
+\begin{code}
+  scale  :: a -> (a `k` a)                              -- $1\times1$
+
+  (|||)  :: (a `k` c) -> (b `k` c) -> ((a :* b) `k` c)  -- horizontal juxt
+
+  (&&&)  :: (a `k` c) -> (a `k` d) -> (a `k` (c :* d))  -- vertical juxt
+\end{code}
+
+\vspace{3ex}
+Types guarantee rectangularity.
 }
 
 \framet{Efficiency of composition}{
