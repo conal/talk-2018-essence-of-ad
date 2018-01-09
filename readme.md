@@ -2,6 +2,8 @@
 
 An [invited talk for PEPM 2018](https://popl18.sigplan.org/track/PEPM-2018#Invited-Talks).
 
+See PDF [here](http://conal.net/talks/simple-essence-of-automatic-differentiation.pdf).
+
 ### Abstract
 
 Automatic differentiation (AD) is often presented in two forms: forward mode and reverse mode.
