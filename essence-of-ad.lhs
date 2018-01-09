@@ -63,7 +63,7 @@ Chain rule for each.
 
 where
 
-$$|lim(epsilon -> 0)(frac(norm (f (a+epsilon) - (f a + T epsilon)))(norm epsilon)) == 0|$$
+$$|lim(epsilon -> 0)(frac(norm (f (a+epsilon) - (f a + der f a epsilon)))(norm epsilon)) == 0|$$
 
 \vspace{8ex}
 
