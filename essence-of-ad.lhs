@@ -293,6 +293,8 @@ magSqr = addC . (mulC . (exl &&& exl) &&& mulC . (exr &&& exr))
 \vspace{12ex}
 \begin{code}
 cosSinProd (x,y) = (cos z, sin z) where z = x * y
+
+cosSinProd = (cosC &&& sinC) . mulC
 \end{code}
 \begin{textblock}{160}[1,0](357,37)
 \begin{tcolorbox}
@@ -346,7 +348,7 @@ instance Cartesian k => Cartesian (GD k) where
   exr  = linearD exr exr
   D f &&& D g = D (\ a -> let { (b,f') = f a ; (c,g') = g a } in ((b,c), f' &&& g'))
 
-instance NumCat D where
+instance ... => NumCat D where
   negateC = linearD negateC negateC
   addC  = linearD addC addC
   mulC  = ??
