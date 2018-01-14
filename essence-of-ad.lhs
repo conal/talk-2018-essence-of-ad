@@ -323,11 +323,11 @@ instance Cartesian D where
   D f &&& D g = D (\ a -> let { (b,f') = f a ; (c,g') = g a } in ((b,c), f' &&& g'))
 \end{code}
 
-\vspace{0.5ex}
+\vspace{1.5ex}
 \pause
 
 Each |D| operation just uses corresponding |(:-*)| operation.\\[2ex]
-Generalize from |(:-*)| to other cartesian categories.
+Generalize from |(:-*)| to other cartesian categories.\\[4.1ex]
 }
 
 %format GD = GAD
