@@ -208,7 +208,7 @@ instance Cartesian D where
 instance NumCat D where
   negateC = linearD negateC
   addC  = linearD addC
-  mulC  = D (mulC &&& \ (a,b) -> (\ (da,db) -> b*da + a*db))
+  mulC  = D (mulC &&& (\ (a,b) -> \ (da,db) -> b*da + a*db))
 \end{code}
 }
 
@@ -362,7 +362,7 @@ instance ... => NumCat D where
 \framet{Numeric operations}{
 Specific to (linear) \emph{functions}:
 
->      mulC  = D (mulC &&& \ (a,b) -> (\ (da,db) -> b*da + a*db))
+>      mulC  = D (mulC &&& (\ (a,b) -> \ (da,db) -> b*da + a*db))
 
 \pause
 
@@ -544,26 +544,30 @@ Types guarantee rectangularity.
 %% Doesn't type-check, because (->) is not in CoproductPCat.
 %% See ConCat.Continuation
 
+%format ContC (k) = Cont"_{"k"}"
+%format (ContC (k) (r)) = Cont"_{"k"}^{"r"}"
+
 %if True
 \framet{Continuation category}{\mathindent0ex
-\vspace{-1.3ex}
+\setlength{\blanklineskip}{1ex}
+%% \vspace{-1.3ex}
+%%  type Ok (ContC k r) = Ok k
 \begin{code}
-newtype Cont k r a b = Cont ((b `k` r) -> (a `k` r))
+newtype ContC k r a b = Cont ((b `k` r) -> (a `k` r))
 
-cont :: Category k => (a `k` b) -> Cont k r a b
+cont :: Category k => (a `k` b) -> ContC k r a b
 cont f = Cont (. NOP f)   -- Optimize uses
 
-instance Category (Cont k r) where
-  type Ok (Cont k r) = Ok k
+instance Category (ContC k r) where
   id = cont id
   (.) = inAbst2 (flip (.))
 
-instance (ProductCat k, CoproductPCat k) => ProductCat (Cont k r) where
+instance (ProductCat k, CoproductPCat k) => ProductCat (ContC k r) where
   exl = cont exl
   exr = cont exr
   (&&&) = inAbst2 (\ f g -> (f |||| g) . unjoinP)
 
-instance CoproductPCat k => CoproductPCat (Cont k r) where
+instance CoproductPCat k => CoproductPCat (ContC k r) where
   inlP = cont inlP
   inrP = cont inrP
   (||||) = inAbst2 (\ f g -> joinP . (f &&& g))
@@ -613,11 +617,11 @@ type RAD s = GD (Cont (L s))
 \framet{Duality}{
 \pause
 \begin{itemize}\itemsep3ex
-\item Vector space dual: |u :-* r|, with |u| a vector space over |r|.
-\item If |u| has finite dimension, then |u :-* r =~= u|.
-\item For |f :: u :-* r|, |f == dot v| for some |v :: u|.
+\item Vector space dual: |u :-* s|, with |u| a vector space over |s|.
+\item If |u| has finite dimension, then |u :-* s =~= u|.
+\item For |f :: u :-* s|, |f == dot v| for some |v :: u|.
 \item Gradients are derivatives of functions with scalar codomain.
-\item Represent |a :-* b| by |(b :-* r) -> (a :-* r)| by |b -> a|.
+\item Represent |a :-* b| by |(b :-* s) -> (a :-* s)| by |b -> a|.
 \pitem \emph{Ideal} for extracting gradient vector.
        Just apply to |1| (|id|).
 %% \item Often don't need vector space; semi-module will do.
