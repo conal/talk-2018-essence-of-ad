@@ -709,8 +709,8 @@ type Backprop = GD (Dual (-+>))
 \wpicture{1.5in}{fst}
 \end{tcolorbox}
 \end{textblock}
-\vspace{10ex}
-\begin{center}\hspace{-8ex}\wpicture{2.5in}{fst-gradr}\end{center}
+\vspace{4ex}
+\begin{center}\hspace{0ex}\wpicture{2.5in}{fst-gradr}\end{center}
 }
 
 \framet{RAD example (dual function)}{
@@ -748,8 +748,8 @@ type Backprop = GD (Dual (-+>))
 \wpicture{2in}{magSqr}
 \end{tcolorbox}
 \end{textblock}
-\vspace{10ex}
-\begin{center}\hspace{-4ex}\wpicture{4in}{magSqr-gradr}\end{center}
+\vspace{7ex}
+\begin{center}\hspace{-4ex}\wpicture{3.8in}{magSqr-gradr}\end{center}
 }
 
 \framet{RAD example (dual function)}{
