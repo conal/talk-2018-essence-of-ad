@@ -165,10 +165,9 @@ class Category k where
 
 NOP
 class Category k => ProductCat k where
-  type Prod k a b
-  exl    ::  (Prod k a b) `k` a
-  exr    ::  (Prod k a b) `k` b
-  (&&&)  ::  (a `k` c)  -> (a `k` d)  -> (a `k` (Prod k c d))
+  exl    ::  (a :* b) `k` a
+  exr    ::  (a :* b) `k` b
+  (&&&)  ::  (a `k` c)  -> (a `k` d)  -> (a `k` (c :* d))
 \end{code}
 
 \vspace{3ex}
