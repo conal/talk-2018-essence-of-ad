@@ -2,8 +2,8 @@
 
 % Presentation
 %\documentclass[aspectratio=1610]{beamer} % Macbook Pro screen 16:10
-%% \documentclass{beamer} % default aspect ratio 4:3
-\documentclass[handout]{beamer}
+\documentclass{beamer} % default aspect ratio 4:3
+%% \documentclass[handout]{beamer}
 
 % \setbeameroption{show notes} % un-comment to see the notes
 
@@ -15,7 +15,7 @@
 %include formatting.fmt
 
 \title[]{The simple essence of automatic differentiation}
-\date{January 2018}
+\date{January 2018 (revised June 2018)}
 % \date{\today{} (draft)}
 \institute[]{Target}
 
@@ -34,10 +34,10 @@
 
 \frame{\titlepage}
 % \title{Essence of automatic differentiation}
-\title{The simple essence of automatic differentiation}
+\title{Simple essence of AD}
 % \title{Simple essence of AD}
 % \institute{Target}
-\date{Jan 2018}
+\date{January/June 2018}
 
 \framet{What's a derivative?}{
 \begin{itemize}\itemsep4ex
@@ -120,6 +120,8 @@ Often much work in common to |f| and |der f|.
 \pause
 Linear functions are their own perfect linear approximations.
 
+\vspace{2ex}
+
 \begin{code}
 der id   a  =  id
 der fst  a  =  fst
@@ -131,9 +133,9 @@ For linear functions |f|,
 
 > andDer f a = (f a, f)
 
-i.e.,
+%% i.e.,
 
-> andDer f = f &&& const f
+%% > andDer f = f &&& const f
 
 }
 
@@ -186,7 +188,60 @@ Plus laws and classes for arithmetic etc.
 %format addC = add
 %format negateC = negate
 
-\framet{Simple automatic differentiation}{
+%if False
+\framet{Homomorphisms}{
+
+A \emph{functor} |F| maps arrows from one category to another, preserving |Category| structure:
+\begin{code}
+F id == id
+
+F (g . f) == F g . F f
+\end{code}
+
+\ 
+
+\pause
+A \emph{cartesian functor} |F| additionally preserves |Cartesian| structure:
+\begin{code}
+F exl  == exl
+
+F exr  == exr
+
+F (f &&& g)  == F f &&& F g
+\end{code}
+}
+%endif
+
+\framet{Automatic differentiation}{
+
+\begin{code}
+newtype D a b = D (a -> b :* (a :-* b))
+
+andDer :: (a -> b) -> D a b
+andDer f = D (f &&& der f)     -- specification
+\end{code}
+\pause
+Spec: |D| is a cartesian category, and |andDer| preserves structure.
+\pause
+{\setlength{\blanklineskip}{1ex}
+\begin{code}
+andDer id == id
+
+andDer (g . f) == andDer g . andDer f
+
+NOP
+andDer exl  == exl
+
+andDer exr  == exr
+
+andDer (f &&& g)  == andDer f &&& andDer g
+\end{code}
+}
+\pause \emph{The game}: solve these equations for the RHS operations.
+}
+
+
+\framet{Solution: simple automatic differentiation}{
 \mathindent-1ex
 \begin{code}
 newtype D a b = D (a -> b :* (a :-* b))
@@ -372,7 +427,7 @@ Rephrase:
 scale :: Multiplicative a => a -> (a :-* a)
 scale u = \ v -> u * v
 
-(||||) :: Additive c => (a :-* c) -> (b :-* c) -> ((a :* b) :-* c)
+(||||) :: (a :-* c) -> (b :-* c) -> ((a :* b) :-* c)
 f |||| g = \ (a,b) -> f a ^+^ g b
 \end{code}
 
@@ -394,9 +449,9 @@ class Category k => ProductCat k where
   (&&&)  :: (a `k` c) -> (a `k` d) -> (a `k` (c :* d))
 
 class Category k => CoproductCat k where
-  inl    :: Additive b  => a `k` (a :* b)
-  inr    :: Additive a  => b `k` (a :* b)
-  (|||)  :: Additive c  => (a `k` c) -> (b `k` c) -> ((a :* b) `k` c)
+  inl    :: a `k` (a :* b)
+  inr    :: b `k` (a :* b)
+  (|||)  :: (a `k` c) -> (b `k` c) -> ((a :* b) `k` c)
 
 class ScalarCat k a where
   scale :: a -> (a `k` a)
@@ -424,7 +479,6 @@ class ScalarCat k a where
 newtype a -+> b = AddFun (a -> b)
 
 instance Category (-+>) where
-  type Ok (-+>) = Additive
   id   = AddFun id
   (.)  = inNew2 (.)
 
@@ -533,7 +587,7 @@ Types guarantee rectangularity.
     |f --> (. NOP f)|.
   \item Results in left-composition.
   \item Initialize with |id :: r `k` r|.
-  \item Corresponds to a categorical pullback.
+  %% \item Corresponds to a categorical pullback.
   \item Construct |h . der f a| directly, without |der f a|.\\
          %% Often eliminates large \& sparse matrices.
   \end{itemize}
