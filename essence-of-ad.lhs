@@ -924,17 +924,21 @@ Compilers already work symbolically and preserve sharing.
 %format ### = ||||
 
 \framet{Conclusions}{
-\begin{itemize}\itemsep2ex
+\begin{itemize}\itemsep2.5ex
 \item Simple AD algorithm, specializing to forward, reverse, mixed.
-\item No graphs, tapes, or partial derivatives.
-\item Calculated rigorously from simple homomorphic specifications.
-\item No mutation, hence parallel-friendly and low memory use.
-\item One rule per combining form: |(.)|, |(&&&)|, |(###)|.
+\item No graphs, tapes, tags, partial derivatives, or mutation.
+\item Parallel-friendly and low memory use.
+\item Calculated
+  % rigorously
+  from simple, regular
+  algebra problems.
+  %% homomorphic specifications.
+%% \item One rule per combining form: |(.)|, |(&&&)|, |(###)|.
 %% \item RAD as simple as FAD but very efficient for gradient problems.
-\item Reverse mode via simple, general constructions.
+%% \item Reverse mode via simple, general constructions.
 \item Generalizes to derivative categories other than linear maps.
 \item Differentiate regular Haskell code (via plugin).
-\item More details in an \href{http://conal.net/papers/essence-of-ad/}{ICFP 2018 paper}.
+\item More details in my \href{http://conal.net/papers/essence-of-ad/}{ICFP 2018 paper}.
 \end{itemize}
 }
 
