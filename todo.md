@@ -1,21 +1,24 @@
 ## Revision notes
 
-*   Use `Monoidal`/`(***)` rather than `Cartesian`/`(&&&)`.
+*   Slides 28, 29: streamline.
+*   Slide 31: break slide in two, with specification and solution.
+*   Maybe use `Monoidal`/`(***)` rather than `Cartesian`/`(&&&)`.
     I'd have to define `(&&&)` and `(|||)`.
-*   Slide 24: simplify.
-*   Slides 26, 27: streamline.
-*   The functorial specification.
-    Somewhere: point out that all of the algorithms are calculated from simple specifications as homomorphisms, referring to the paper.
 
 Done:
 
+*   Slide 6: drop "i.e."
 *   Slide 7: drop product subscript (not used elsewhere).
+*   Slide 8: side-by-side homomorphisms
 *   Slide 13: add CCC expression.
 *   Slides 8, 16, ...: Drop extra parens? Or move them to around the second fork argument.
 *   Slide 24: use superscript and subscript (both as in paper)
+*   Slide 26: simplify.
 *   Slide 28: Replace `r` by `s`.
 *   Slide 32: drop "`Double`". Other slides, too?
 *   Slide 37: correct picture? [yes]
+*   The functorial specification.
+    Somewhere: point out that all of the algorithms are calculated from simple specifications as homomorphisms, referring to the paper.
 
 ## To do
 

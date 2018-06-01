@@ -53,6 +53,7 @@ Chain rule for each.
 }
 
 
+%format der = "\mathcal{D}"
 \framet{What's a derivative?}{\mathindent20ex
 \pause
 \vspace{2ex}
@@ -97,6 +98,7 @@ der (f &&& g) a == der f a &&& der g a
 
 }
 
+%format adf = "\hat{"der"}"
 \framet{Compositionality}{
 
 Chain rule:
@@ -108,8 +110,8 @@ Chain rule:
 \pause
 To fix, combine regular result with derivative:
 \begin{code}
-andDer :: (a -> b) -> (a -> (b :* (a :-* b)))
-andDer f = f &&& der f     -- specification
+adf :: (a -> b) -> (a -> (b :* (a :-* b)))
+adf f = f &&& der f     -- specification
 \end{code}
 
 Often much work in common to |f| and |der f|.
@@ -131,11 +133,11 @@ der snd  a  =  snd
 
 For linear functions |f|,
 
-> andDer f a = (f a, f)
+> adf f a = (f a, f)
 
 %% i.e.,
 
-%% > andDer f = f &&& const f
+%% > adf f = f &&& const f
 
 }
 
@@ -217,27 +219,34 @@ F (f &&& g)  == F f &&& F g
 \begin{code}
 newtype D a b = D (a -> b :* (a :-* b))
 
-andDer :: (a -> b) -> D a b
-andDer f = D (f &&& der f)     -- specification
+adf :: (a -> b) -> D a b
+adf f = D (f &&& der f)     -- not computable
 \end{code}
 \pause
-Spec: |D| is a cartesian category, and |andDer| preserves structure.
-\pause
+
+% Specification: |D| is a cartesian category, and |adf| preserves structure, i.e.,
+Require |adf| to preserve |Category| and |Cartesian| structure\pause:
 {\setlength{\blanklineskip}{1ex}
+\begin{minipage}[c]{0.49\textwidth} % \mathindent1em
 \begin{code}
-andDer id == id
+adf id == id
 
-andDer (g . f) == andDer g . andDer f
-
-NOP
-andDer exl  == exl
-
-andDer exr  == exr
-
-andDer (f &&& g)  == andDer f &&& andDer g
+adf (g . f) == adf g . adf f
 \end{code}
+\end{minipage}
+% \hspace{1ex}
+\begin{minipage}[c]{0.49\textwidth} % \mathindent1em
+\begin{code}
+adf exl  == exl
+
+adf exr  == exr
+
+adf (f &&& g)  == adf f &&& adf g
+\end{code}
+\end{minipage}
 }
-\pause \emph{The game}: solve these equations for the RHS operations.
+
+\pause \emph{The game:} solve these equations for the RHS operations.
 }
 
 
@@ -249,7 +258,7 @@ newtype D a b = D (a -> b :* (a :-* b))
 \pause
 \vspace{-4ex}
 \begin{code}
-linearD f = D (f &&& const f)
+linearD f = D (\ a -> (f a, a))
 
 instance Category D where
   id = linearD id
@@ -365,7 +374,7 @@ cosSinProd = (cosC &&& sinC) . mulC
 \begin{code}
 newtype D a b = D (a -> b :* (a :-* b))
 
-linearD f = D (f &&& const f)
+linearD f = D (\ a -> (f a, f))
 
 instance Category D where
   id = linearD id
@@ -384,14 +393,17 @@ Each |D| operation just uses corresponding |(:-*)| operation.\\[2ex]
 Generalize from |(:-*)| to other cartesian categories.\\[4.1ex]
 }
 
-%format GD = GAD
+%% %format GD = GAD
+
+%format (GD (k)) = D"_{"k"}"
+%% %format GD (k) a b = a "\leadsto_{"k"}" b
 
 \framet{Generalized AD}{
 \mathindent-1ex
 \begin{code}
 newtype GD k a b = D (a -> b :* (a `k` b))
 
-linearD f f' = D (f &&& const f')
+linearD f f' = D (\ a -> (f a, f'))
 
 instance Category k => Category (GD k) where
   id = linearD id id
@@ -516,29 +528,36 @@ instance Multiplicative s => ScalarCat (-+>) s where
 \end{itemize}
 }
 
-%% %format toV = "\Varid{to}_V"
-%% %format unV = "\Varid{un}_V"
+%format toV = "\Varid{to}_V"
+%format unV = "\Varid{un}_V"
+%format (LC (s)) = M"_{"s"}"
+%format V (s) = V"_{"s"}"
+%format HasV (s) = HasV"_{"s"}"
 
 \framet{Generalized matrices}{\mathindent2ex
 \vspace{-1.3ex}
 \begin{code}
-newtype L s a b = L (V s b (V s a s))
-
-class HasV s a where
-  type V s a :: * -> * -- Free vector space as representable functor
-  toV  :: a -> V s a s
-  unV  :: V s a s -> a
+newtype LC s a b = L (V s b (V s a s))
 
 NOP
-
-instance Category       (L s)    where ...
-
-instance ProductCat     (L s)    where ...
-
-instance CoproductPCat  (L s)    where ...
-
-instance ScalarCat      (L s) s  where ...
+applyL :: LC s a b -> (a -> b)
 \end{code}
+%if False
+\vspace{-7ex}
+\begin{code}
+applyL as a = unV ((NOP <.> toV a) <$> as)
+
+NOP
+class HasV s a where
+  type V s a :: * -> * -- |a| as container of |s| values
+  toV  :: a -> V s a s
+  unV  :: V s a s -> a
+\end{code}
+%else
+\vspace{5ex}
+
+%endif
+Require |applyL| to preserve structure. Solve for methods.
 }
 
 \framet{Core vocabulary}{
@@ -602,7 +621,7 @@ Types guarantee rectangularity.
 %format (ContC (k) (r)) = Cont"_{"k"}^{"r"}"
 
 %if True
-\framet{Continuation category}{\mathindent0ex
+\framet{Continuation category}{ %\mathindent0ex
 \setlength{\blanklineskip}{1ex}
 %% \vspace{-1.3ex}
 %%  type Ok (ContC k r) = Ok k
@@ -610,29 +629,52 @@ Types guarantee rectangularity.
 newtype ContC k r a b = Cont ((b `k` r) -> (a `k` r))
 
 cont :: Category k => (a `k` b) -> ContC k r a b
-cont f = Cont (. NOP f)   -- Optimize uses
-
-instance Category (ContC k r) where
-  id = cont id
-  (.) = inAbst2 (flip (.))
-
-instance (ProductCat k, CoproductPCat k) => ProductCat (ContC k r) where
-  exl = cont exl
-  exr = cont exr
-  (&&&) = inAbst2 (\ f g -> (f |||| g) . unjoinP)
-
-instance CoproductPCat k => CoproductPCat (ContC k r) where
-  inlP = cont inlP
-  inrP = cont inrP
-  (||||) = inAbst2 (\ f g -> joinP . (f &&& g))
+cont f = Cont (. NOP f)
 \end{code}
+
+\vspace{2ex}
+
+% Spec: |ContC k r| is a cartesian category, and |cont| preserves structure.
+
+Require |cont| to preserve structure. Solve for methods.
+
+\pause\vspace{3ex}
+
+We'll use an isomorphism:
+\begin{code}
+join    :: Cocartesian  k => (c `k` a) :* (d `k` a) -> ((c :* d) `k` a)
+unjoin  :: Cocartesian  k => ((c :* d) `k` a) -> (c `k` a) :* (d `k` a)
+
+join (f,g)  = f ||| g
+unjoin h    = (h . inl, h . inr)
+\end{code}
+
 }
+\framet{Continuation category (solution)}{\mathindent0ex
+\begin{code}
+instance Category k => Category (ContC k r) where
+  id = Cont id
+  Cont g . Cont f = Cont (f . g)
+
+instance ProductCat k => ProductCat (ContC k r) where
+  exl  = Cont (join . inl)
+  exr  = Cont (join . inr)
+  (&&&) = inNew2 (\ f g -> (f ||| g) . unjoin)
+
+instance CoproductCat k => CoproductCat (ContC k r) where
+  inl  = Cont (exl . unjoin)
+  inr  = Cont (exr . unjoin)
+  (|||) = inNew2 (\ f g -> join . (f &&& g))
+
+instance ScalarCat k a => ScalarCat (ContC k r) a where
+   scale s = Cont (scale s)
+\end{code}}
 %endif
 
-\framet{Reverse-mode AD without tears}{\mathindent1.2in
+\framet{Reverse-mode AD without tears}{\mathindent2in
 \pause
 \begin{code}
-type RAD s = GD (Cont (L s))
+GD (ContC (LC s) r)
 \end{code}
 }
 
@@ -645,14 +687,14 @@ type RAD s = GD (Cont (L s))
     |f --> (. NOP f)|.
   \item Results in left-composition.
   \item Initialize with |id :: r `k` r|.
-  \item Corresponds to a categorical pullback.
+  %% \item Corresponds to a categorical pullback.
   \item Construct |h . der f a| directly, without |der f a|.\\
         %% Often eliminates large \& sparse matrices.
   \end{itemize}
 \pitem We've seen this trick before:
   \begin{itemize}\itemsep2ex
   \item Transforming naive |reverse| from quadratic to linear.
-  \item Lists generalize to monoids, and monoids to categories.
+  \item List generalizes to monoids, and monoids to categories.
   \end{itemize}
 \end{itemize}
 }
@@ -706,10 +748,10 @@ instance ScalarCat k s => ScalarCat (Dual k) s where
 \end{code}
 }
 
-\framet{Backpropagation}{\mathindent1.2in
+\framet{Backpropagation}{\mathindent2in
 \pause
 \begin{code}
-type Backprop = GD (Dual (-+>))
+GD (Dual (-+>))
 \end{code}
 }
 
@@ -863,14 +905,17 @@ Compilers already work symbolically and preserve sharing.
 %format ### = ||||
 
 \framet{Conclusions}{
-\begin{itemize}\itemsep3ex
+\begin{itemize}\itemsep2ex
 \item Simple AD algorithm, specializing to forward, reverse, mixed.
-\item No graphs; no partial derivatives.
+\item No graphs, tapes, or partial derivatives.
+\item Calculated rigorously from simple homomorphic specifications.
+\item No mutation, hence parallel-friendly and low memory use.
 \item One rule per combining form: |(.)|, |(&&&)|, |(###)|.
 %% \item RAD as simple as FAD but very efficient for gradient problems.
-\item Reverse mode via simple, general dual construction.
+\item Reverse mode via simple, general constructions.
 \item Generalizes to derivative categories other than linear maps.
 \item Differentiate regular Haskell code (via plugin).
+\item More details in an ICFP 2018 paper.
 \end{itemize}
 }
 
