@@ -1,7 +1,6 @@
 ## Revision notes
 
 *   Slides 28, 29: streamline.
-*   Slide 31: break slide in two, with specification and solution.
 *   Maybe use `Monoidal`/`(***)` rather than `Cartesian`/`(&&&)`.
     I'd have to define `(&&&)` and `(|||)`.
 
@@ -15,6 +14,7 @@ Done:
 *   Slide 24: use superscript and subscript (both as in paper)
 *   Slide 26: simplify.
 *   Slide 28: Replace `r` by `s`.
+*   Slide 31: break slide in two, with specification and solution.
 *   Slide 32: drop "`Double`". Other slides, too?
 *   Slide 37: correct picture? [yes]
 *   The functorial specification.

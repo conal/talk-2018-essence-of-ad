@@ -628,6 +628,7 @@ Types guarantee rectangularity.
 \begin{code}
 newtype ContC k r a b = Cont ((b `k` r) -> (a `k` r))
 
+NOP
 cont :: Category k => (a `k` b) -> ContC k r a b
 cont f = Cont (. NOP f)
 \end{code}
@@ -725,7 +726,25 @@ GD (ContC (LC s) r)
 \end{itemize}
 }
 
-\framet{Dual categories}{
+%format unDot = dot"^{-1}"
+\framet{Duality}{
+\begin{code}
+newtype Dual k a b = Dual (b `k` a)
+
+asDual :: ContC k s a b -> DualC k a b
+asDual (Cont f) = Dual (unDot . f . dot)
+\end{code}
+where
+\begin{code}
+dot    :: u -> (u :-* s)
+unDot  :: (u :-* s) -> u
+\end{code}
+\vspace{2ex}
+
+Require |asDual| to preserve structure. Solve for methods.
+}
+
+\framet{Duality (solution)}{
 \begin{code}
 newtype Dual k a b = Dual (b `k` a)
 
@@ -915,7 +934,7 @@ Compilers already work symbolically and preserve sharing.
 \item Reverse mode via simple, general constructions.
 \item Generalizes to derivative categories other than linear maps.
 \item Differentiate regular Haskell code (via plugin).
-\item More details in an ICFP 2018 paper.
+\item More details in an \href{http://conal.net/papers/essence-of-ad/}{ICFP 2018 paper}.
 \end{itemize}
 }
 
