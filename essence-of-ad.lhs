@@ -15,7 +15,7 @@
 %include formatting.fmt
 
 \title[]{The simple essence of automatic differentiation}
-\date{January 2018 (revised June 2018)}
+\date{January/June 2018}
 % \date{\today{} (draft)}
 \institute[]{Target}
 
