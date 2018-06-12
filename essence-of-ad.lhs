@@ -28,6 +28,8 @@
 
 \usepackage{scalerel}
 
+%format == = =
+
 \begin{document}
 
 % \large
@@ -726,10 +728,12 @@ GD (ContC (LC s) r)
 \end{itemize}
 }
 
+
+%format (DualC (k)) = Dual"_{"k"}"
 %format unDot = dot"^{-1}"
 \framet{Duality}{
 \begin{code}
-newtype Dual k a b = Dual (b `k` a)
+newtype DualC k a b = Dual (b `k` a)
 
 asDual :: ContC k s a b -> DualC k a b
 asDual (Cont f) = Dual (unDot . f . dot)
@@ -746,23 +750,23 @@ Require |asDual| to preserve structure. Solve for methods.
 
 \framet{Duality (solution)}{
 \begin{code}
-newtype Dual k a b = Dual (b `k` a)
+newtype DualC k a b = Dual (b `k` a)
 
-instance Category k => Category (Dual k) where
+instance Category k => Category (DualC k) where
   id   = Dual id
   (.)  = inNew2 (flip (.))
 
-instance CoproductCat k => ProductCat (Dual k) where
+instance CoproductCat k => ProductCat (DualC k) where
   exl    = Dual inlP
   exr    = Dual inrP
   (&&&)  = inNew2 (||||)
 
-instance ProductCat k => CoproductPCat (Dual k) where
+instance ProductCat k => CoproductPCat (DualC k) where
   inlP    = Dual exl
   inrP    = Dual exr
   (||||)  = inNew2 (&&&)
 
-instance ScalarCat k s => ScalarCat (Dual k) s where
+instance ScalarCat k s => ScalarCat (DualC k) s where
   scale s = Dual (scale s)
 \end{code}
 }
@@ -770,7 +774,7 @@ instance ScalarCat k s => ScalarCat (Dual k) s where
 \framet{Backpropagation}{\mathindent2in
 \pause
 \begin{code}
-GD (Dual (-+>))
+GD (DualC (-+>))
 \end{code}
 }
 
@@ -942,5 +946,34 @@ Compilers already work symbolically and preserve sharing.
 \end{itemize}
 }
 
+\framet{Reflections: recipe for success}{
+
+\pause
+Basic advice:
+
+\begin{itemize}\itemsep2.5ex
+\item
+  Capture main concepts as first-class values.
+\item
+  Focus on abstract notions, not specific representations.
+  %% (linear maps, not matrices)
+%% \item
+%%   Transform naive representation for high-performance.
+%%   %% (using homomorphic specification)
+\item
+  Calculate efficient implementation from simple specification.
+\end{itemize}
+
+Not previously applied to AD (afaik).
+
+\pause\vspace{4ex}
+
+\emph{Quandary:} Most programming languages poor for function-like things.
+
+\pause\vspace{2ex}
+
+\emph{Solution:} \emph{\href{http://conal.net/papers/compiling-to-categories}{Compiling to categories}}.
+
+}
 
 \end{document}
