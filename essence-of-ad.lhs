@@ -949,7 +949,7 @@ Compilers already work symbolically and preserve sharing.
 \framet{Reflections: recipe for success}{
 
 \pause
-Basic advice:
+Key principles:
 
 \begin{itemize}\itemsep2.5ex
 \item
