@@ -1,4 +1,4 @@
-## The simple essence of automatic differentiation
+## The simple essence of automatic differentiation <br>(Differentiable functional programming made easy)
 
 An [invited talk for PEPM 2018](https://popl18.sigplan.org/track/PEPM-2018#Invited-Talks).
 
