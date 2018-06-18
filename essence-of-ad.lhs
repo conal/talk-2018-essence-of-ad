@@ -2,8 +2,8 @@
 
 % Presentation
 %\documentclass[aspectratio=1610]{beamer} % Macbook Pro screen 16:10
-\documentclass{beamer} % default aspect ratio 4:3
-%% \documentclass[handout]{beamer}
+%% \documentclass{beamer} % default aspect ratio 4:3
+\documentclass[handout]{beamer}
 
 % \setbeameroption{show notes} % un-comment to see the notes
 
@@ -956,10 +956,6 @@ Key principles:
   Capture main concepts as first-class values.
 \item
   Focus on abstract notions, not specific representations.
-  %% (linear maps, not matrices)
-%% \item
-%%   Transform naive representation for high-performance.
-%%   %% (using homomorphic specification)
 \item
   Calculate efficient implementation from simple specification.
 \end{itemize}
