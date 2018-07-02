@@ -4,7 +4,7 @@ An [invited talk for PEPM 2018](https://popl18.sigplan.org/track/PEPM-2018#Invit
 
 *   [Slides (PEPM, January 2018)](http://conal.net/talks/essence-of-automatic-differentiation-2018-01.pdf) (529K PDF).
 *   [Video (slides + audio)](https://youtu.be/Shl3MtWGu18) (60 minutes, 104MB).
-*   [Paper](http://conal.net/papers/essence-of-ad/) (extended version of ICFP 2018 paper).
+*   [Paper](http://conal.net/papers/essence-of-ad/) (ICFP 2018 and extended version).
 *   [Revised slides (Microsoft Research, June 2018)](http://conal.net/talks/essence-of-automatic-differentiation-2018-06.pdf) (484K PDF).
 
 ### Abstract
