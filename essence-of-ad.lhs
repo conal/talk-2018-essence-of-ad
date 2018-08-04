@@ -260,7 +260,7 @@ newtype D a b = D (a -> b :* (a :-* b))
 \pause
 \vspace{-4ex}
 \begin{code}
-linearD f = D (\ a -> (f a, a))
+linearD f = D (\ a -> (f a, f))
 
 instance Category D where
   id = linearD id
