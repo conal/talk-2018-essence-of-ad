@@ -1,5 +1,6 @@
 ## Revision notes
 
+*   Make a new first slide giving motivation for AD and my work in particular.
 *   Slides 28, 29: streamline.
 *   Maybe use `Monoidal`/`(***)` rather than `Cartesian`/`(&&&)`.
     I'd have to define `(&&&)` and `(|||)`.
