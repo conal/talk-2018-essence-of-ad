@@ -15,7 +15,13 @@
 %include formatting.fmt
 
 \title[]{The simple essence of automatic differentiation}
-\date{January/June 2018}
+\date{
+%if icfp
+ICFP, September 2018
+%else
+January/June 2018
+%endif
+}
 % \date{\today{} (draft)}
 \institute[]{Target}
 
@@ -41,6 +47,7 @@
 % \institute{Target}
 \date{January/June 2018}
 
+%if not icfp
 \framet{What's a derivative?}{
 \begin{itemize}\itemsep4ex
 \pitem Number
@@ -53,7 +60,7 @@
 \vspace{2ex}\pause
 Chain rule for each.
 }
-
+%endif
 
 %format der = "\mathcal{D}"
 \framet{What's a derivative?}{\mathindent20ex
@@ -101,23 +108,6 @@ der (f &&& g) a == der f a &&& der g a
 }
 
 %format adf = "\hat{"der"}"
-\framet{Compositionality}{
-
-Chain rule:
-
-> der (g . f) a == der g (f a) . der f a     -- non-compositional
-
-\ 
-
-\pause
-To fix, combine regular result with derivative:
-\begin{code}
-adf :: (a -> b) -> (a -> (b :* (a :-* b)))
-adf f = f &&& der f     -- specification
-\end{code}
-
-Often much work in common to |f| and |der f|.
-}
 
 \framet{Linear functions}{
 
@@ -133,6 +123,8 @@ der snd  a  =  snd
             ...
 \end{code}
 
+%if False
+%% After swapping slides, drop this part
 For linear functions |f|,
 
 > adf f a = (f a, f)
@@ -140,7 +132,26 @@ For linear functions |f|,
 %% i.e.,
 
 %% > adf f = f &&& const f
+%endif
+}
 
+\framet{Compositionality}{
+
+Chain rule:
+
+> der (g . f) a == der g (f a) . der f a     -- non-compositional
+
+\ 
+
+\pause
+To fix, combine regular result with derivative:
+\begin{code}
+adf :: (a -> b) -> (a -> (b :* (a :-* b)))
+adf f = f &&& der f     -- specification
+\end{code}
+% adf f = (f a, der f a)    -- specification
+
+Often much work in common to |f| and |der f|.
 }
 
 %% \nc\scrk[1]{_{\hspace{#1}\scriptscriptstyle{(\leadsto)\!}}}
@@ -278,6 +289,7 @@ instance NumCat D where
 \end{code}
 }
 
+%if not icfp
 \framet{Running examples}{
 \begin{code}
 sqr :: Num a => a -> a
@@ -370,6 +382,7 @@ cosSinProd = (cosC &&& sinC) . mulC
 
 \begin{center}\wpicture{4.5in}{cosSinProd-adf}\end{center}
 }
+%endif
 
 \framet{Generalizing AD}{
 \mathindent-1ex
@@ -388,7 +401,7 @@ instance Cartesian D where
   D f &&& D g = D (\ a -> let { (b,f') = f a ; (c,g') = g a } in ((b,c), f' &&& g'))
 \end{code}
 
-\vspace{1.5ex}
+\vspace{0.5ex}
 \pause
 
 Each |D| operation just uses corresponding |(:-*)| operation.\\[2ex]
@@ -415,8 +428,9 @@ instance Cartesian k => Cartesian (GD k) where
   exl  = linearD exl exl
   exr  = linearD exr exr
   D f &&& D g = D (\ a -> let { (b,f') = f a ; (c,g') = g a } in ((b,c), f' &&& g'))
-
-instance ... => NumCat D where
+\end{code}
+\begin{code}
+instance SPC ... => NumCat D where
   negateC = linearD negateC negateC
   addC  = linearD addC addC
   mulC  = ??
@@ -511,11 +525,27 @@ instance Multiplicative s => ScalarCat (-+>) s where
 \end{code}
 }
 
-\framet{Extracting a data representation}{
+%format toV = "\Varid{to}_V"
+%format unV = "\Varid{un}_V"
+%format (LC (s)) = M"_{"s"}"
+%format V (s) = V"_{"s"}"
+%format HasV (s) = HasV"_{"s"}"
 
-\begin{itemize}\itemsep2ex \parskip1ex
+\framet{Extracting a data representation}{
+\begin{itemize}
+\itemsep2ex
+\parskip1ex
+%if icfp
+%% \itemsep1ex
+%% \parskip0.75ex
+%else
+%endif
 \item How to extract a matrix or gradient vector?
 \item Sample over a domain \emph{basis} (rows of identity matrix).
+%if icfp
+\item Very inefficient for gradient-based optimization!
+\item Alternatively, represent as ``generalized matrices'' (|LC s a b|).
+%else
 \item For $n$-dimensional \emph{domain},
   \begin{itemize}\itemsep2ex
   \item Make $n$ passes.
@@ -527,15 +557,11 @@ instance Multiplicative s => ScalarCat (-+>) s where
   \item High-dimensional domain.
   \item Very low-dimensional (1-D) codomain.
   \end{itemize}
+%endif
 \end{itemize}
 }
 
-%format toV = "\Varid{to}_V"
-%format unV = "\Varid{un}_V"
-%format (LC (s)) = M"_{"s"}"
-%format V (s) = V"_{"s"}"
-%format HasV (s) = HasV"_{"s"}"
-
+%if not icfp
 \framet{Generalized matrices}{\mathindent2ex
 \vspace{-1.3ex}
 \begin{code}
@@ -576,6 +602,7 @@ Sufficient to build arbitrary ``matrices'':
 \vspace{3ex}
 Types guarantee rectangularity.
 }
+%endif
 
 \framet{Efficiency of composition}{
 \begin{itemize}\itemsep2ex \parskip0.5ex
@@ -681,6 +708,7 @@ GD (ContC (LC s) r)
 \end{code}
 }
 
+%if not icfp
 \framet{Left-associating composition (RAD)}{
 \begin{itemize}\itemsep2ex \parskip1ex
 \item CPS-like category:
@@ -712,14 +740,17 @@ GD (ContC (LC s) r)
   e.g., |(++)| , since |(++ NOP bs) . (++ NOP as) == (++ NOP (as ++ bs))|.
   \end{itemize}
 }
+%endif
 
 \framet{Duality}{
 \pause
 \begin{itemize}\itemsep3ex
 \item Vector space dual: |u :-* s|, with |u| a vector space over |s|.
 \item If |u| has finite dimension, then |u :-* s =~= u|.
+%if not icfp
 \item For |f :: u :-* s|, |f == dot v| for some |v :: u|.
 \item Gradients are derivatives of functions with scalar codomain.
+%endif
 \item Represent |a :-* b| by |(b :-* s) -> (a :-* s)| by |b -> a|.
 \pitem \emph{Ideal} for extracting gradient vector.
        Just apply to |1| (|id|).
@@ -777,6 +808,8 @@ instance ScalarCat k s => ScalarCat (DualC k) s where
 GD (DualC (-+>))
 \end{code}
 }
+
+%if not icfp
 
 \framet{RAD example (dual function)}{
 \begin{textblock}{160}[1,0](357,37)
@@ -904,26 +937,7 @@ GD (DualC (-+>))
 \begin{center}\hspace{-0.5ex}\wpicture{4.8in}{magSqr-andInc}\end{center}
 }
 
-\framet{Symbolic vs automatic differentiation}{
-Often described as opposing techniques:
-\begin{itemize}\itemsep2ex
-\pitem \emph{Symbolic}:
-  \begin{itemize}\itemsep1.5ex
-  \item Apply differentiation rules symbolically.
-  \item Can duplicate much work.
-  \item Needs algebraic manipulation.
-\end{itemize}
-\pitem \emph{Automatic}:
-\begin{itemize}\itemsep1.5ex
-  \item FAD: easy to implement but often inefficient.
-  \item RAD: efficient but tricky to implement.
-\end{itemize}
-\end{itemize}
-\pause
-\vspace{2ex}
-Another view: \emph{AD is SD done by a compiler.}\\[2ex]
-Compilers already work symbolically and preserve sharing.
-}
+%endif
 
 %format ### = ||||
 
@@ -942,7 +956,11 @@ Compilers already work symbolically and preserve sharing.
 %% \item Reverse mode via simple, general constructions.
 \item Generalizes to derivative categories other than linear maps.
 \item Differentiate regular Haskell code (via plugin).
+%if icfp
+\item Paper: pictures, proofs, incremental computation.
+%else
 \item More details in my \href{http://conal.net/papers/essence-of-ad/}{ICFP 2018 paper}.
+%endif
 \end{itemize}
 }
 
@@ -970,6 +988,27 @@ Not previously applied to AD (afaik).
 
 \emph{Solution:} \emph{\href{http://conal.net/papers/compiling-to-categories}{Compiling to categories}}.
 
+}
+
+\framet{Symbolic vs automatic differentiation}{
+Often described as opposing techniques:
+\begin{itemize}\itemsep2ex
+\pitem \emph{Symbolic}:
+  \begin{itemize}\itemsep1.5ex
+  \item Apply differentiation rules symbolically.
+  \item Can duplicate much work.
+  \item Needs algebraic manipulation.
+\end{itemize}
+\pitem \emph{Automatic}:
+\begin{itemize}\itemsep1.5ex
+  \item FAD: easy to implement but often inefficient.
+  \item RAD: efficient but tricky to implement.
+\end{itemize}
+\end{itemize}
+\pause
+\vspace{2ex}
+Another view: \emph{AD is SD done by a compiler.}\\[2ex]
+Compilers already work symbolically and preserve sharing.
 }
 
 \end{document}

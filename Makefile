@@ -1,4 +1,12 @@
-TARG = essence-of-ad
+PAPER = essence-of-ad
+
+FULL = $(PAPER)
+ICFP = $(FULL)-icfp
+
+# TARG = $(FULL)
+TARG = $(ICFP)
+
+texdeps = formatting.fmt Makefile
 
 .PRECIOUS: %.tex %.pdf %.web
 
@@ -8,6 +16,9 @@ see: $(TARG).see
 
 dots = $(wildcard Figures/*.dot)
 pdfs = $(addsuffix .pdf, $(basename $(dots))) $(wildcard Figures/circuits/*-scaled.pdf)
+
+$(ICFP).tex: $(PAPER).lhs $(texdeps)
+	lhs2TeX --set=extended --set=icfp -o $*.tex $(PAPER).lhs
 
 %.pdf: %.tex $(pdfs) Makefile
 	pdflatex $*.tex
