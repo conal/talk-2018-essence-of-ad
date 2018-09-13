@@ -45,7 +45,39 @@ January/June 2018
 \title{Simple essence of AD}
 % \title{Simple essence of AD}
 % \institute{Target}
-\date{January/June 2018}
+\date{
+%if icfp
+ICFP 2018
+%else
+January/June 2018
+%endif
+}
+
+%format der = "\mathcal{D}"
+
+\framet{Differentiable programming made easy}{
+
+\parskip2ex
+
+Current AI revolution runs on large data, speed, and AD\pause, but
+
+\begin{itemize}\itemsep3ex
+\item AD algorithm (backprop) is complex and stateful.
+\item Programming model is complex and semantically dubious.
+\end{itemize}
+
+\vspace{2ex}
+
+\pause
+Solutions in this paper:
+
+\begin{itemize}\itemsep3ex
+%% \item Simple, generalized, efficient, parallel-friendly, \emph{calculated} AD.
+%% \item Use host language instead of API.
+\item AD: Simple, calculated, efficient, parallel-friendly, generalized.
+\item API: |derivative|.
+\end{itemize}
+}
 
 %if not icfp
 \framet{What's a derivative?}{
@@ -62,7 +94,6 @@ Chain rule for each.
 }
 %endif
 
-%format der = "\mathcal{D}"
 \framet{What's a derivative?}{\mathindent20ex
 \pause
 \vspace{2ex}
@@ -90,7 +121,7 @@ Sequential:
 (g . f) a = g (f a)
 
 NOP
-der (g . f) a == der g (f a) . der f a    -- ``chain rule''
+der (g . f) a == der g (f a) . der f a    -- chain rule
 \end{code}
 
 \pause
@@ -112,7 +143,8 @@ der (f &&& g) a == der f a &&& der g a
 \framet{Linear functions}{
 
 \pause
-Linear functions are their own perfect linear approximations.
+Linear functions are their own derivatives everywhere.
+% perfect linear approximations.
 
 \vspace{2ex}
 
@@ -238,7 +270,7 @@ adf f = D (f &&& der f)     -- not computable
 \pause
 
 % Specification: |D| is a cartesian category, and |adf| preserves structure, i.e.,
-Require |adf| to preserve |Category| and |Cartesian| structure\pause:
+Specification: |adf| preserves |Category| and |Cartesian| structure\pause:
 {\setlength{\blanklineskip}{1ex}
 \begin{minipage}[c]{0.49\textwidth} % \mathindent1em
 \begin{code}
@@ -388,7 +420,10 @@ cosSinProd = (cosC &&& sinC) . mulC
 \mathindent-1ex
 \begin{code}
 newtype D a b = D (a -> b :* (a :-* b))
-
+\end{code}
+\pause
+\vspace{-4ex}
+\begin{code}
 linearD f = D (\ a -> (f a, f))
 
 instance Category D where
@@ -401,7 +436,7 @@ instance Cartesian D where
   D f &&& D g = D (\ a -> let { (b,f') = f a ; (c,g') = g a } in ((b,c), f' &&& g'))
 \end{code}
 
-\vspace{0.5ex}
+\vspace{1.5ex}
 \pause
 
 Each |D| operation just uses corresponding |(:-*)| operation.\\[2ex]
@@ -417,7 +452,10 @@ Generalize from |(:-*)| to other cartesian categories.\\[4.1ex]
 \mathindent-1ex
 \begin{code}
 newtype GD k a b = D (a -> b :* (a `k` b))
-
+\end{code}
+\pause
+\vspace{-4ex}
+\begin{code}
 linearD f f' = D (\ a -> (f a, f'))
 
 instance Category k => Category (GD k) where
@@ -435,6 +473,7 @@ instance SPC ... => NumCat D where
   addC  = linearD addC addC
   mulC  = ??
 \end{code}
+\vspace{-4ex}
 }
 
 %format inlP = inl
