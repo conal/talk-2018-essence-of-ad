@@ -63,7 +63,7 @@ Current AI revolution runs on large data, speed, and AD\pause, but
 
 \begin{itemize}\itemsep3ex
 \item AD algorithm (backprop) is complex and stateful.
-\item Programming model is complex and semantically dubious.
+\item Graph APIs are complex and semantically dubious.
 \end{itemize}
 
 \vspace{2ex}
@@ -102,7 +102,9 @@ Chain rule for each.
 
 \pause
 
-where
+A local linear (affine) approximation:
+
+\ 
 
 $$|lim(epsilon -> 0)(frac(norm (f (a+epsilon) - (f a + der f a epsilon)))(norm epsilon)) == 0|$$
 
@@ -294,7 +296,6 @@ adf (f &&& g)  == adf f &&& adf g
 \pause \emph{The game:} solve these equations for the RHS operations.
 }
 
-
 \framet{Solution: simple automatic differentiation}{
 \mathindent-1ex
 \begin{code}
@@ -467,13 +468,13 @@ instance Cartesian k => Cartesian (GD k) where
   exr  = linearD exr exr
   D f &&& D g = D (\ a -> let { (b,f') = f a ; (c,g') = g a } in ((b,c), f' &&& g'))
 \end{code}
+\vspace{-5ex}
 \begin{code}
 instance SPC ... => NumCat D where
   negateC = linearD negateC negateC
   addC  = linearD addC addC
   mulC  = ??
 \end{code}
-\vspace{-4ex}
 }
 
 %format inlP = inl
@@ -504,7 +505,7 @@ Now
 
 }
 
-\framet{Linear arrow vocabulary}{
+\framet{Linear arrow (biproduct) vocabulary}{
 \begin{code}
 class Category k where
   id   :: a `k` a
@@ -659,7 +660,7 @@ Types guarantee rectangularity.
 \item
   All-left: ``reverse mode AD'' (RAD).
 \item
-  RAD is much better for gradient-based optimization.
+  RAD is \emph{much} better for gradient-based optimization.
 \end{itemize}
 }
 
