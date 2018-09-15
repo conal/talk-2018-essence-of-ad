@@ -1,7 +1,7 @@
 ## The simple essence of automatic differentiation
 
-*   [Invited talk for PEPM 2018](https://popl18.sigplan.org/track/PEPM-2018#Invited-Talks):
-    *   [Slides (PEPM, January 2018)](http://conal.net/talks/essence-of-automatic-differentiation-2018-01.pdf) (529K PDF).
+*   [Invited talk for PEPM (January) 2018](https://popl18.sigplan.org/track/PEPM-2018#Invited-Talks):
+    *   [Slides](http://conal.net/talks/essence-of-automatic-differentiation-2018-01.pdf) (529K PDF).
     *   [Video (slides + audio)](https://youtu.be/Shl3MtWGu18) (60 minutes, 104MB).
 *   Revised for Microsoft Research, June 2018:
     *   [Slides](http://conal.net/talks/essence-of-automatic-differentiation-2018-06.pdf) (484K PDF).
