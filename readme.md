@@ -5,7 +5,7 @@
     *   [Video (slides + audio)](https://youtu.be/Shl3MtWGu18) (60 minutes, 104MB).
 *   Revised for Microsoft Research, June 2018:
     *   [Slides](http://conal.net/talks/essence-of-automatic-differentiation-2018-06.pdf) (484K PDF).
-    *   [Video](https://www.microsoft.com/en-us/research/video/the-simple-essence-of-automatic-differentiation/) (90 minutes).
+    *   Video [via microsoft.com](https://www.microsoft.com/en-us/research/video/the-simple-essence-of-automatic-differentiation/) or [directly on YouTube](https://www.youtube.com/watch?v=ne99laPUxN4) (90 minutes).
 *   [Paper](http://conal.net/papers/essence-of-ad/) (ICFP 2018 and extended version, plus related work).
 
 ### Abstract
