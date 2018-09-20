@@ -2,8 +2,8 @@
 
 % Presentation
 %\documentclass[aspectratio=1610]{beamer} % Macbook Pro screen 16:10
-%% \documentclass{beamer} % default aspect ratio 4:3
-\documentclass[handout]{beamer}
+\documentclass{beamer} % default aspect ratio 4:3
+%% \documentclass[handout]{beamer}
 
 % \setbeameroption{show notes} % un-comment to see the notes
 
@@ -15,6 +15,7 @@
 %include formatting.fmt
 
 \title[]{The simple essence of automatic differentiation}
+% \subtitle{(Differentiable programming made easy)}
 \date{
 %if icfp
 ICFP, September 2018
@@ -55,7 +56,7 @@ January/June 2018
 
 %format der = "\mathcal{D}"
 
-\framet{Differentiable programming made easy}{
+\framet{Motivation}{
 
 \parskip2ex
 
@@ -69,7 +70,8 @@ Current AI revolution runs on large data, speed, and AD\pause, but
 \vspace{2ex}
 
 \pause
-Solutions in this paper:
+%% Differentiable programming made easy:
+Paper's contributions:
 
 \begin{itemize}\itemsep3ex
 %% \item Simple, generalized, efficient, parallel-friendly, \emph{calculated} AD.
@@ -78,6 +80,27 @@ Solutions in this paper:
 \item API: |derivative|.
 \end{itemize}
 }
+
+%if icfp
+\framet{Compiling to categories}{
+\begin{itemize}\itemsep2ex\parskip1.5ex
+\item
+  Presented at ICFP 2017.
+\item
+  A GHC plugin:
+  \begin{itemize}\itemsep3ex
+  \item
+    Convert regular code to categorical form.
+  \item
+    Reinterpret in another category.
+  \end{itemize}
+%% \item
+%%   Solve homomorphisms for correct implementations.
+%% \item
+%%   Works even for non-computable homomorphisms (e.g., differentiation).
+\end{itemize}
+}
+%endif
 
 %if not icfp
 \framet{What's a derivative?}{
@@ -100,9 +123,16 @@ Chain rule for each.
 
 > der :: (a -> b) -> (a -> (a :-* b))
 
-\pause
+%% \pause
 
-A local linear (affine) approximation:
+%if icfp
+\vspace{8ex}
+%endif
+producing a local linear approximation%
+%if icfp
+.
+%else
+:
 
 \ 
 
@@ -111,6 +141,7 @@ $$|lim(epsilon -> 0)(frac(norm (f (a+epsilon) - (f a + der f a epsilon)))(norm e
 \vspace{8ex}
 
 See \href{https://archive.org/details/SpivakM.CalculusOnManifolds_201703}{\emph{Calculus on Manifolds}} by Michael Spivak.
+%endif
 }
 
 
@@ -177,7 +208,9 @@ Chain rule:
 
 \ 
 
+%if not icfp
 \pause
+%endif
 To fix, combine regular result with derivative:
 \begin{code}
 adf :: (a -> b) -> (a -> (b :* (a :-* b)))
@@ -185,7 +218,9 @@ adf f = f &&& der f     -- specification
 \end{code}
 % adf f = (f a, der f a)    -- specification
 
+%if not icfp
 Often much work in common to |f| and |der f|.
+%endif
 }
 
 %% \nc\scrk[1]{_{\hspace{#1}\scriptscriptstyle{(\leadsto)\!}}}
@@ -261,7 +296,7 @@ F (f &&& g)  == F f &&& F g
 }
 %endif
 
-\framet{Automatic differentiation}{
+\framet{Automatic differentiation (specification)}{
 
 \begin{code}
 newtype D a b = D (a -> b :* (a :-* b))
@@ -272,7 +307,7 @@ adf f = D (f &&& der f)     -- not computable
 \pause
 
 % Specification: |D| is a cartesian category, and |adf| preserves structure, i.e.,
-Specification: |adf| preserves |Category| and |Cartesian| structure\pause:
+Specification: |adf| preserves |Category| and |Cartesian| structure:
 {\setlength{\blanklineskip}{1ex}
 \begin{minipage}[c]{0.49\textwidth} % \mathindent1em
 \begin{code}
@@ -293,15 +328,16 @@ adf (f &&& g)  == adf f &&& adf g
 \end{minipage}
 }
 
-\pause \emph{The game:} solve these equations for the RHS operations.
+%\pause
+\emph{The game:} solve these equations for the RHS operations.
 }
 
-\framet{Solution: simple automatic differentiation}{
+\framet{Automatic differentiation (solution)}{
 \mathindent-1ex
 \begin{code}
 newtype D a b = D (a -> b :* (a :-* b))
 \end{code}
-\pause
+%% \pause
 \vspace{-4ex}
 \begin{code}
 linearD f = D (\ a -> (f a, f))
@@ -422,7 +458,7 @@ cosSinProd = (cosC &&& sinC) . mulC
 \begin{code}
 newtype D a b = D (a -> b :* (a :-* b))
 \end{code}
-\pause
+%% \pause
 \vspace{-4ex}
 \begin{code}
 linearD f = D (\ a -> (f a, f))
@@ -438,7 +474,7 @@ instance Cartesian D where
 \end{code}
 
 \vspace{1.5ex}
-\pause
+%% \pause
 
 Each |D| operation just uses corresponding |(:-*)| operation.\\[2ex]
 Generalize from |(:-*)| to other cartesian categories.\\[4.1ex]
@@ -454,7 +490,7 @@ Generalize from |(:-*)| to other cartesian categories.\\[4.1ex]
 \begin{code}
 newtype GD k a b = D (a -> b :* (a `k` b))
 \end{code}
-\pause
+%% \pause
 \vspace{-4ex}
 \begin{code}
 linearD f f' = D (\ a -> (f a, f'))
@@ -487,7 +523,9 @@ Specific to (linear) \emph{functions}:
 
 >      mulC  = D (mulC &&& (\ (a,b) -> \ (da,db) -> b*da + a*db))
 
+%if not icfp
 \pause
+%endif
 
 Rephrase:
 
@@ -505,6 +543,7 @@ Now
 
 }
 
+%if not icfp
 \framet{Linear arrow (biproduct) vocabulary}{
 \begin{code}
 class Category k where
@@ -525,6 +564,7 @@ class ScalarCat k a where
   scale :: a -> (a `k` a)
 \end{code}
 }
+%endif
 
 %format Double = R
 
@@ -580,12 +620,14 @@ instance Multiplicative s => ScalarCat (-+>) s where
 %% \parskip0.75ex
 %else
 %endif
+%if icfp
+\item Finally, extract a matrix or gradient vector.
+\item Very inefficient for gradient-based optimization!
+\item Alternatively, represent as ``generalized matrices'' (|LC s a b|).\\
+      (Solve more homomorphisms.)
+%else
 \item How to extract a matrix or gradient vector?
 \item Sample over a domain \emph{basis} (rows of identity matrix).
-%if icfp
-\item Very inefficient for gradient-based optimization!
-\item Alternatively, represent as ``generalized matrices'' (|LC s a b|).
-%else
 \item For $n$-dimensional \emph{domain},
   \begin{itemize}\itemsep2ex
   \item Make $n$ passes.
@@ -601,6 +643,7 @@ instance Multiplicative s => ScalarCat (-+>) s where
 \end{itemize}
 }
 
+%format applyL = applyM
 %if not icfp
 \framet{Generalized matrices}{\mathindent2ex
 \vspace{-1.3ex}
@@ -645,9 +688,15 @@ Types guarantee rectangularity.
 %endif
 
 \framet{Efficiency of composition}{
-\begin{itemize}\itemsep2ex \parskip0.5ex
+\begin{itemize}
+%if icfp
+\itemsep4ex
+%else
+\itemsep2ex \parskip0.5ex
+%endif
 \item
-  Arrow composition is associative.
+  Composition is associative.
+%if not icfp
 \item 
   Some associations are more efficient than others, so
   \begin{itemize}\itemsep2ex
@@ -655,10 +704,12 @@ Types guarantee rectangularity.
   \item Equivalent to \emph{matrix chain multiplication} --- $O(n \log n)$.
   \item Choice determined by \emph{types}, i.e., compile-time information.
   \end{itemize}
-\pitem
-  All-right: ``forward mode AD'' (FAD).
+\pause
+%endif
 \item
-  All-left: ``reverse mode AD'' (RAD).
+  All right: ``forward mode AD'' (FAD).
+\item
+  All left: ``reverse mode AD'' (RAD).
 \item
   RAD is \emph{much} better for gradient-based optimization.
 \end{itemize}
@@ -666,21 +717,23 @@ Types guarantee rectangularity.
 
 %format --> = "\mapsto"
 \framet{Left-associating composition (RAD)}{
-\begin{itemize}\itemsep2ex \parskip1ex
-\pitem CPS-like category:
-  \begin{itemize}\itemsep2ex
-  \item Represent |a `k` b| by |(b `k` r) -> (a `k` r)|.
-  \item Meaning:
-    %% |ab --> (\ br -> br . ab)|.
-    |f --> (. NOP f)|.
-  \item Results in left-composition.
-  \item Initialize with |id :: r `k` r|.
-  %% \item Corresponds to a categorical pullback.
-  \item Construct |h . der f a| directly, without |der f a|.\\
-         %% Often eliminates large \& sparse matrices.
-  \end{itemize}
+CPS-like category:
+\vspace{2ex}
+
+\begin{itemize}\itemsep4ex
+\item Represent |a `k` b| by |(b `k` r) -> (a `k` r)|.
+\item Meaning:
+  %% |ab --> (\ br -> br . ab)|.
+  |f --> (\ h -> h . f)|.
+  %% |f --> (. NOP f)|.
+%if False
+\item Results in left-composition.
+\item Initialize with |id :: r `k` r|.
+%endif
+%% \item Corresponds to a categorical pullback.
+\item Construct |h . der f a| directly, without |der f a|.\\
+       %% Often eliminates large \& sparse matrices.
 \end{itemize}
-\vspace{13.8ex}
 }
 
 %% Doesn't type-check, because (->) is not in CoproductPCat.
@@ -690,7 +743,7 @@ Types guarantee rectangularity.
 %format (ContC (k) (r)) = Cont"_{"k"}^{"r"}"
 
 %if True
-\framet{Continuation category}{ %\mathindent0ex
+\framet{Continuation category (specification)}{ %\mathindent0ex
 \setlength{\blanklineskip}{1ex}
 %% \vspace{-1.3ex}
 %%  type Ok (ContC k r) = Ok k
@@ -702,12 +755,17 @@ cont :: Category k => (a `k` b) -> ContC k r a b
 cont f = Cont (. NOP f)
 \end{code}
 
+%if icfp
+\vspace{10ex}
+%else
 \vspace{2ex}
+%endif
 
 % Spec: |ContC k r| is a cartesian category, and |cont| preserves structure.
 
 Require |cont| to preserve structure. Solve for methods.
 
+%if not icfp
 \pause\vspace{3ex}
 
 We'll use an isomorphism:
@@ -718,8 +776,9 @@ unjoin  :: Cocartesian  k => ((c :* d) `k` a) -> (c `k` a) :* (d `k` a)
 join (f,g)  = f ||| g
 unjoin h    = (h . inl, h . inr)
 \end{code}
-
+%endif
 }
+
 \framet{Continuation category (solution)}{\mathindent0ex
 \begin{code}
 instance Category k => Category (ContC k r) where
@@ -783,8 +842,13 @@ GD (ContC (LC s) r)
 %endif
 
 \framet{Duality}{
-\pause
-\begin{itemize}\itemsep3ex
+%\pause
+\begin{itemize}
+%if icfp
+\itemsep4ex
+%else
+\itemsep3ex
+%endif
 \item Vector space dual: |u :-* s|, with |u| a vector space over |s|.
 \item If |u| has finite dimension, then |u :-* s =~= u|.
 %if not icfp
@@ -792,8 +856,8 @@ GD (ContC (LC s) r)
 \item Gradients are derivatives of functions with scalar codomain.
 %endif
 \item Represent |a :-* b| by |(b :-* s) -> (a :-* s)| by |b -> a|.
-\pitem \emph{Ideal} for extracting gradient vector.
-       Just apply to |1| (|id|).
+\item \emph{Ideal} for extracting gradient vector.
+      Just apply to |1| (|id|).
 %% \item Often don't need vector space; semi-module will do.
 %% \item Semimodule suffices in place of vector space.
 \end{itemize}
@@ -802,7 +866,7 @@ GD (ContC (LC s) r)
 
 %format (DualC (k)) = Dual"_{"k"}"
 %format unDot = dot"^{-1}"
-\framet{Duality}{
+\framet{Duality (specification)}{
 \begin{code}
 newtype DualC k a b = Dual (b `k` a)
 
@@ -1006,7 +1070,7 @@ GD (DualC (-+>))
 
 \framet{Reflections: recipe for success}{
 
-\pause
+%\pause
 Key principles:
 
 \begin{itemize}\itemsep2.5ex
@@ -1033,13 +1097,13 @@ Not previously applied to AD (afaik).
 \framet{Symbolic vs automatic differentiation}{
 Often described as opposing techniques:
 \begin{itemize}\itemsep2ex
-\pitem \emph{Symbolic}:
+\item \emph{Symbolic}:
   \begin{itemize}\itemsep1.5ex
   \item Apply differentiation rules symbolically.
   \item Can duplicate much work.
   \item Needs algebraic manipulation.
 \end{itemize}
-\pitem \emph{Automatic}:
+\item \emph{Automatic}:
 \begin{itemize}\itemsep1.5ex
   \item FAD: easy to implement but often inefficient.
   \item RAD: efficient but tricky to implement.
@@ -1047,7 +1111,7 @@ Often described as opposing techniques:
 \end{itemize}
 \pause
 \vspace{2ex}
-Another view: \emph{AD is SD done by a compiler.}\\[2ex]
+My view: \emph{AD is SD done by a compiler.}\\[2ex]
 Compilers already work symbolically and preserve sharing.
 }
 
