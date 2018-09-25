@@ -2,8 +2,8 @@
 
 % Presentation
 %\documentclass[aspectratio=1610]{beamer} % Macbook Pro screen 16:10
-\documentclass{beamer} % default aspect ratio 4:3
-%% \documentclass[handout]{beamer}
+%% \documentclass{beamer} % default aspect ratio 4:3
+\documentclass[handout]{beamer}
 
 % \setbeameroption{show notes} % un-comment to see the notes
 
@@ -44,7 +44,6 @@ January/June 2018
 \frame{\titlepage}
 % \title{Essence of automatic differentiation}
 \title{Simple essence of AD}
-% \title{Simple essence of AD}
 % \institute{Target}
 \date{
 %if icfp
@@ -56,15 +55,17 @@ January/June 2018
 
 %format der = "\mathcal{D}"
 
-\framet{Motivation}{
+%if True
+\framet{Machine learning: promise and problems}{ % Motivation
 
 \parskip2ex
 
-Current AI revolution runs on large data, speed, and AD\pause, but
+% Current AI revolution runs on large data, speed, and AD\pause, but
+Impressive results.\pause\hspace{-3pt}, but
 
 \begin{itemize}\itemsep3ex
 \item AD algorithm (backprop) is complex and stateful.
-\item Graph APIs are complex and semantically dubious.
+\item Complex graph APIs.
 \end{itemize}
 
 \vspace{2ex}
@@ -80,6 +81,7 @@ Paper's contributions:
 \item API: |derivative|.
 \end{itemize}
 }
+%endif
 
 %if icfp
 \framet{Compiling to categories}{
@@ -90,9 +92,9 @@ Paper's contributions:
   A GHC plugin:
   \begin{itemize}\itemsep3ex
   \item
-    Convert regular code to categorical form.
+    Convert regular Haskell code to categorical form.
   \item
-    Reinterpret in another category.
+    Reinterpret in other categories.
   \end{itemize}
 %% \item
 %%   Solve homomorphisms for correct implementations.
@@ -117,22 +119,18 @@ Chain rule for each.
 }
 %endif
 
-\framet{What's a derivative?}{\mathindent20ex
+\framet{Differentiation}{\mathindent20ex
+%if not icfp
 \pause
+%endif
 \vspace{2ex}
 
 > der :: (a -> b) -> (a -> (a :-* b))
 
 %% \pause
 
-%if icfp
-\vspace{8ex}
-%endif
-producing a local linear approximation%
-%if icfp
-.
-%else
-:
+%if not icfp
+producing a local linear approximation:
 
 \ 
 
@@ -175,7 +173,9 @@ der (f &&& g) a == der f a &&& der g a
 
 \framet{Linear functions}{
 
+%if not icfp
 \pause
+%endif
 Linear functions are their own derivatives everywhere.
 % perfect linear approximations.
 
@@ -724,8 +724,8 @@ CPS-like category:
 \item Represent |a `k` b| by |(b `k` r) -> (a `k` r)|.
 \item Meaning:
   %% |ab --> (\ br -> br . ab)|.
-  |f --> (\ h -> h . f)|.
-  %% |f --> (. NOP f)|.
+  |f' --> (\ h -> h . f')|.
+  %% |f' --> (. NOP f')|.
 %if False
 \item Results in left-composition.
 \item Initialize with |id :: r `k` r|.
@@ -801,7 +801,9 @@ instance ScalarCat k a => ScalarCat (ContC k r) a where
 %endif
 
 \framet{Reverse-mode AD without tears}{\mathindent2in
+%if not icfp
 \pause
+%endif
 \begin{code}
 GD (ContC (LC s) r)
 \end{code}
@@ -1070,7 +1072,7 @@ GD (DualC (-+>))
 
 \framet{Reflections: recipe for success}{
 
-%\pause
+\pause
 Key principles:
 
 \begin{itemize}\itemsep2.5ex
