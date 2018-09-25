@@ -55,12 +55,10 @@ January/June 2018
 
 %format der = "\mathcal{D}"
 
-%if True
 \framet{Machine learning: promise and problems}{ % Motivation
 
 \parskip2ex
 
-% Current AI revolution runs on large data, speed, and AD\pause, but
 Impressive results.\pause\hspace{-3pt}, but
 
 \begin{itemize}\itemsep3ex
@@ -71,17 +69,13 @@ Impressive results.\pause\hspace{-3pt}, but
 \vspace{2ex}
 
 \pause
-%% Differentiable programming made easy:
 Paper's contributions:
 
 \begin{itemize}\itemsep3ex
-%% \item Simple, generalized, efficient, parallel-friendly, \emph{calculated} AD.
-%% \item Use host language instead of API.
 \item AD: Simple, calculated, efficient, parallel-friendly, generalized.
 \item API: |derivative|.
 \end{itemize}
 }
-%endif
 
 %if icfp
 \framet{Compiling to categories}{
@@ -126,8 +120,6 @@ Chain rule for each.
 \vspace{2ex}
 
 > der :: (a -> b) -> (a -> (a :-* b))
-
-%% \pause
 
 %if not icfp
 producing a local linear approximation:
@@ -187,17 +179,6 @@ der fst  a  =  fst
 der snd  a  =  snd
             ...
 \end{code}
-
-%if False
-%% After swapping slides, drop this part
-For linear functions |f|,
-
-> adf f a = (f a, f)
-
-%% i.e.,
-
-%% > adf f = f &&& const f
-%endif
 }
 
 \framet{Compositionality}{
