@@ -7,7 +7,7 @@
     *   [Slides](http://conal.net/talks/essence-of-automatic-differentiation-2018-06.pdf) (484K PDF).
     *   Video [via microsoft.com](https://www.microsoft.com/en-us/research/video/the-simple-essence-of-automatic-differentiation/) or [directly on YouTube](https://www.youtube.com/watch?v=ne99laPUxN4) (90 minutes).
 *   ICFP 2018:
-    *   [Slides](http://conal.net/talks/essence-of-automatic-differentiation-icfp.pdf).
+    *   [Slides](http://conal.net/talks/essence-of-automatic-differentiation-icfp.pdf) (173K PDF).
     *   [Video](https://youtu.be/MmkNSsGAZhw?t=64) (20 minutes)
 *   [Paper](http://conal.net/papers/essence-of-ad/) (ICFP 2018 and extended version, plus related work).
 
