@@ -1,24 +1,30 @@
-PAPER = essence-of-ad
+talk = essence-of-ad
 
-FULL = $(PAPER)
-ICFP = $(FULL)-icfp
+full = $(talk)
+icfp = $(full)-icfp
+google = $(full)-google
 
-# TARG = $(FULL)
-TARG = $(ICFP)
+# TARG = $(full)
+# TARG = $(icfp)
+TARG = $(google)
 
 texdeps = formatting.fmt Makefile
 
 .PRECIOUS: %.tex %.pdf %.web
 
-all: $(TARG).pdf
+# all: $(TARG).pdf
+all: $(google).pdf $(full).pdf $(icfp).pdf
 
 see: $(TARG).see
 
 dots = $(wildcard Figures/*.dot)
 pdfs = $(addsuffix .pdf, $(basename $(dots))) $(wildcard Figures/circuits/*-scaled.pdf)
 
-$(ICFP).tex: $(PAPER).lhs $(texdeps)
-	lhs2TeX --set=extended --set=icfp -o $*.tex $(PAPER).lhs
+$(icfp).tex: $(talk).lhs $(texdeps)
+	lhs2TeX --set=extended --set=icfp -o $*.tex $(talk).lhs
+
+$(google).tex: $(talk).lhs $(texdeps)
+	lhs2TeX --set=extended --set=google -o $*.tex $(talk).lhs
 
 %.pdf: %.tex $(pdfs) Makefile
 	pdflatex $*.tex
@@ -38,13 +44,18 @@ showpdf = open -a Skim.app
 pdfs: $(pdfs)
 
 clean:
-	rm -f $(TARG).{tex,pdf,aux,nav,snm,ptb,log,out,toc}
+	rm -f {$(full),$(icfp),$(google)}.{tex,pdf,aux,nav,snm,ptb,log,out,toc}
 
 web: web-token
 
 STASH=conal@conal.net:/home/conal/web/talks
-web: web-token
 
-web-token: $(TARG).pdf
-	scp $? $(STASH)/essence-of-automatic-differentiation-icfp.pdf
-	touch $@
+# web: web-token
+
+# web-token: $(TARG).pdf
+# 	scp $? $(STASH)/essence-of-automatic-differentiation-icfp.pdf
+# 	touch $@
+
+# %.web-token: %.pdf
+# 	scp $? $(STASH)/essence-of-automatic-differentiation-$@
+# 	touch $@
