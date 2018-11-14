@@ -49,6 +49,8 @@
 
 \nc\framet[2]{\frame{\frametitle{#1}#2}}
 
+\nc\framel[2]{\framet{\hypertarget{#1}{#1}}{#2}}
+
 \nc\hidden[1]{}
 
 
@@ -84,7 +86,7 @@
 \definecolor{linkColor}{rgb}{0,0.42,0.3}
 \definecolor{partColor}{rgb}{0,0,0.8}
 
-\hypersetup{colorlinks=true,urlcolor=linkColor}
+\hypersetup{colorlinks=true,urlcolor=linkColor, linkcolor=partColor}
 
 \usepackage{graphicx}
 \usepackage{color}

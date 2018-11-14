@@ -2,10 +2,12 @@
 
 % Presentation
 %\documentclass[aspectratio=1610]{beamer} % Macbook Pro screen 16:10
-%% \documentclass{beamer} % default aspect ratio 4:3
-\documentclass[handout]{beamer}
+\documentclass{beamer} % default aspect ratio 4:3
+%% \documentclass[handout]{beamer}
 
 % \setbeameroption{show notes} % un-comment to see the notes
+
+%let full = not (icfp || google)
 
 \input{macros}
 
@@ -15,10 +17,14 @@
 %include formatting.fmt
 
 \title[]{The simple essence of automatic differentiation}
-% \subtitle{(Differentiable programming made easy)}
+%if google
+\subtitle{Differentiable programming made easy}
+%endif
 \date{
 %if icfp
 ICFP, September 2018
+%elif google
+November 2018
 %else
 January/June 2018
 %endif
@@ -35,6 +41,11 @@ January/June 2018
 
 \usepackage{scalerel}
 
+%% https://www.conference-publishing.com/Help.php
+\usepackage[utf8]{inputenc} 
+%% \usepackage[T1]{fontenc}
+%% \usepackage{microtype}
+
 %format == = =
 
 \begin{document}
@@ -48,6 +59,8 @@ January/June 2018
 \date{
 %if icfp
 ICFP 2018
+%elif google
+November 2018
 %else
 January/June 2018
 %endif
@@ -55,12 +68,18 @@ January/June 2018
 
 %format der = "\mathcal{D}"
 
-\framet{Machine learning: promise and problems}{ % Motivation
+%if google
+\nc\firstTitle{Differentiable programming made easy}
+%else
+\nc\firstTitle{Machine learning: promise and problems}
+%endif
+
+\framet{\firstTitle}{
 
 \parskip2ex
 
-Impressive results.\pause\hspace{-3pt}, but
-
+%% Impressive results.\pause\hspace{-3pt}, but
+Current AI revolution runs on large data, speed, and AD.\pause\hspace{-3pt}, but
 \begin{itemize}\itemsep3ex
 \item AD algorithm (backprop) is complex and stateful.
 \item Complex graph APIs.
@@ -69,7 +88,8 @@ Impressive results.\pause\hspace{-3pt}, but
 \vspace{2ex}
 
 \pause
-Paper's contributions:
+% Paper's contributions:
+Solutions:
 
 \begin{itemize}\itemsep3ex
 \item AD: Simple, calculated, efficient, parallel-friendly, generalized.
@@ -98,8 +118,12 @@ Paper's contributions:
 }
 %endif
 
-%if not icfp
+%if full
 \framet{What's a derivative?}{
+{
+%if google
+\renewcommand\pitem\item
+%endif
 \begin{itemize}\itemsep4ex
 \pitem Number
 \pitem Vector
@@ -107,33 +131,37 @@ Paper's contributions:
 \pitem Matrix
 \pitem Higher derivatives
 \end{itemize}
+}
 
 \vspace{2ex}\pause
 Chain rule for each.
 }
 %endif
 
-\framet{Differentiation}{\mathindent20ex
-%if not icfp
-\pause
-%endif
-\vspace{2ex}
+\framet{Derivatives as linear maps (Fréchet)}{\mathindent20ex
+\vspace{1ex}
 
 > der :: (a -> b) -> (a -> (a :-* b))
 
-%if not icfp
-producing a local linear approximation:
+\vspace{1ex}
+
+|der f a| is a local \emph{linear} approximation to |f| at |a|.
+%if icfp
+%else
+\pause\hspace{-8pt}:
+
+\vspace{4ex}
 
 \ 
-
 $$|lim(epsilon -> 0)(frac(norm (f (a+epsilon) - (f a + der f a epsilon)))(norm epsilon)) == 0|$$
 
-\vspace{8ex}
-
-See \href{https://archive.org/details/SpivakM.CalculusOnManifolds_201703}{\emph{Calculus on Manifolds}} by Michael Spivak.
+%% \vspace{8ex}
+%% See \href{https://archive.org/details/SpivakM.CalculusOnManifolds_201703}{\emph{Calculus on Manifolds}} by Michael Spivak.
 %endif
-}
 
+\vspace{-8ex}
+
+}
 
 \framet{Composition}{
 
@@ -253,6 +281,32 @@ Plus laws and classes for arithmetic etc.
 %format addC = add
 %format negateC = negate
 
+%if google
+\framet{Compiling to categories}{
+\begin{code}
+sqr a = a * a
+
+magSqr (a,b) = sqr a + sqr b
+
+cosSinProd (x,y) = (cos z, sin z) where z = x * y
+\end{code}
+
+\pause
+In categorical vocabulary:
+
+\begin{code}
+sqr = mulC . (id &&& id)
+
+magSqr = addC . ((sqr . exl) &&& (sqr . exr))
+
+cosSinProd = (cosC &&& sinC) . mulC
+\end{code}
+
+Automated translation \& generalization.
+See \href{http://conal.net/papers/compiling-to-categories/}{ICFP 2017 paper}.
+}
+%endif
+
 %if False
 \framet{Homomorphisms}{
 
@@ -339,8 +393,8 @@ instance NumCat D where
 \end{code}
 }
 
-%if not icfp
-\framet{Running examples}{
+%if full
+\framet{\hypertarget{Examples: derivatives as functions}{Running examples}}{
 \begin{code}
 sqr :: Num a => a -> a
 sqr a = a * a
@@ -358,17 +412,19 @@ In categorical vocabulary:
 \begin{code}
 sqr = mulC . (id &&& id)
 
-magSqr = addC . (mulC . (exl &&& exl) &&& mulC . (exr &&& exr))
+magSqr = addC . (sqr . exl &&& sqr . exr)
 
 cosSinProd = (cosC &&& sinC) . mulC
 \end{code}
 }
 
+%% |magSqr = addC . (mulC . (exl &&& exl) &&& mulC . (exr &&& exr))|
+
 \framet{Visualizing computations}{
 \begin{code}
 magSqr (a,b) = sqr a + sqr b
 NOP
-magSqr = addC . (mulC . (exl &&& exl) &&& mulC . (exr &&& exr))
+magSqr = addC . (sqr . exl &&& sqr . exr)
 \end{code}
 \vspace{-5ex}
 \begin{center}\wpicture{4in}{magSqr}\end{center}
@@ -402,7 +458,7 @@ sqr = mulC . (id &&& id)
 \begin{code}
 magSqr (a,b) = sqr a + sqr b
 
-magSqr = addC . (mulC . (exl &&& exl) &&& mulC . (exr &&& exr))
+magSqr = addC . (sqr . exl &&& sqr . exr)
 \end{code}
 \begin{textblock}{160}[1,0](357,37)
 \begin{tcolorbox}
@@ -511,11 +567,11 @@ Specific to (linear) \emph{functions}:
 Rephrase:
 
 \begin{code}
-scale :: Multiplicative a => a -> (a :-* a)
+scale :: Multiplicative a => a -> (a -> a)
 scale u = \ v -> u * v
 
-(||||) :: (a :-* c) -> (b :-* c) -> ((a :* b) :-* c)
-f |||| g = \ (a,b) -> f a ^+^ g b
+(||||) :: (a -> c) -> (b -> c) -> ((a :* b) -> c)
+(f |||| g) (a,b) = f a ^+^ g b
 \end{code}
 
 Now
@@ -525,25 +581,23 @@ Now
 }
 
 %if not icfp
-\framet{Linear arrow (biproduct) vocabulary}{
+\framet{New generalized vocabulary}{
 \begin{code}
-class Category k where
-  id   :: a `k` a
-  (.)  :: (b `k` c) -> (a `k` b) -> (a `k` c)
-
-class Category k => ProductCat k where
-  exl    :: (a :* b) `k` a
-  exr    :: (a :* b) `k` b
-  (&&&)  :: (a `k` c) -> (a `k` d) -> (a `k` (c :* d))
-
 class Category k => CoproductCat k where
   inl    :: a `k` (a :* b)
   inr    :: b `k` (a :* b)
   (|||)  :: (a `k` c) -> (b `k` c) -> ((a :* b) `k` c)
-
+NOP
 class ScalarCat k a where
   scale :: a -> (a `k` a)
 \end{code}
+
+Differentiation:
+\begin{code}
+der (f ||| g) (a,b) == der f a ||| der g b
+\end{code}
+
+The rest are linear.
 }
 %endif
 
@@ -577,9 +631,9 @@ instance ProductCat (-+>) where
   (&&&)  = inNew2 (&&&)
 
 instance CoproductPCat (-+>) where
-  inlP   = AddFun (,zeroV)
-  inrP   = AddFun (zeroV,)
-  (||||) = inNew2 (\ f g (x,y) -> f x ^+^ g y)
+  inlP   = AddFun (\ a -> (a,zeroV))
+  inrP   = AddFun (\ b -> (zeroV,b))
+  (||||) = inNew2 (\ f g (a,b) -> f a ^+^ g b)
 
 instance Multiplicative s => ScalarCat (-+>) s where
   scale s = AddFun (s NOP *)
@@ -594,19 +648,9 @@ instance Multiplicative s => ScalarCat (-+>) s where
 
 \framet{Extracting a data representation}{
 \begin{itemize}
+%if full
 \itemsep2ex
 \parskip1ex
-%if icfp
-%% \itemsep1ex
-%% \parskip0.75ex
-%else
-%endif
-%if icfp
-\item Finally, extract a matrix or gradient vector.
-\item Very inefficient for gradient-based optimization!
-\item Alternatively, represent as ``generalized matrices'' (|LC s a b|).\\
-      (Solve more homomorphisms.)
-%else
 \item How to extract a matrix or gradient vector?
 \item Sample over a domain \emph{basis} (rows of identity matrix).
 \item For $n$-dimensional \emph{domain},
@@ -620,16 +664,23 @@ instance Multiplicative s => ScalarCat (-+>) s where
   \item High-dimensional domain.
   \item Very low-dimensional (1-D) codomain.
   \end{itemize}
+%else
+\itemsep4ex
+% \parskip2ex
+\item Finally, extract a matrix or gradient vector.
+\item Very inefficient for gradient-based optimization!
+\item Alternatively, represent as ``generalized matrices'' (|LC s a b|).\\
+      Then solve more homomorphisms.
 %endif
 \end{itemize}
 }
 
 %format applyL = applyM
-%if not icfp
+%if full
 \framet{Generalized matrices}{\mathindent2ex
 \vspace{-1.3ex}
 \begin{code}
-newtype LC s a b = L (V s b (V s a s))
+newtype LC s a b = ...
 
 NOP
 applyL :: LC s a b -> (a -> b)
@@ -651,8 +702,11 @@ class HasV s a where
 %endif
 Require |applyL| to preserve structure. Solve for methods.
 }
+%% L (V s b (V s a s))
+%endif
 
-\framet{Core vocabulary}{
+%if full
+\framel{Compositional matrices}{
 Sufficient to build arbitrary ``matrices'':
 \vspace{3ex}
 \begin{code}
@@ -715,6 +769,9 @@ CPS-like category:
 \item Construct |h . der f a| directly, without |der f a|.\\
        %% Often eliminates large \& sparse matrices.
 \end{itemize}
+
+\vspace{2ex}
+Old technique (Cayley 1854), vastly generalized by Yoneda.
 }
 
 %% Doesn't type-check, because (->) is not in CoproductPCat.
@@ -746,7 +803,7 @@ cont f = Cont (. NOP f)
 
 Require |cont| to preserve structure. Solve for methods.
 
-%if not icfp
+%if full
 \pause\vspace{3ex}
 
 We'll use an isomorphism:
@@ -782,7 +839,7 @@ instance ScalarCat k a => ScalarCat (ContC k r) a where
 %endif
 
 \framet{Reverse-mode AD without tears}{\mathindent2in
-%if not icfp
+%if full
 \pause
 %endif
 \begin{code}
@@ -790,7 +847,7 @@ GD (ContC (LC s) r)
 \end{code}
 }
 
-%if not icfp
+%if full
 \framet{Left-associating composition (RAD)}{
 \begin{itemize}\itemsep2ex \parskip1ex
 \item CPS-like category:
@@ -834,7 +891,7 @@ GD (ContC (LC s) r)
 %endif
 \item Vector space dual: |u :-* s|, with |u| a vector space over |s|.
 \item If |u| has finite dimension, then |u :-* s =~= u|.
-%if not icfp
+%if full
 \item For |f :: u :-* s|, |f == dot v| for some |v :: u|.
 \item Gradients are derivatives of functions with scalar codomain.
 %endif
@@ -896,9 +953,9 @@ GD (DualC (-+>))
 \end{code}
 }
 
-%if not icfp
+%if full
 
-\framet{RAD example (dual function)}{
+\framet{\hypertarget{Examples: reverse mode}{RAD example (dual function)}}{
 \begin{textblock}{160}[1,0](357,37)
 \begin{tcolorbox}
 \wpicture{2in}{add}
@@ -1013,7 +1070,7 @@ GD (DualC (-+>))
 \begin{center}\hspace{-2ex}\wpicture{4.4in}{cosSinProd-adrl}\end{center}
 }
 
-\framet{Incremental evaluation}{
+\framel{Incremental evaluation}{
 \pause
 \begin{textblock}{140}[1,0](357,37)
 \begin{tcolorbox}
@@ -1043,11 +1100,7 @@ GD (DualC (-+>))
 %% \item Reverse mode via simple, general constructions.
 \item Generalizes to derivative categories other than linear maps.
 \item Differentiate regular Haskell code (via plugin).
-%if icfp
-\item Paper: pictures, proofs, incremental computation.
-%else
-\item More details in my \href{http://conal.net/papers/essence-of-ad/}{ICFP 2018 paper}.
-%endif
+\item \href{http://conal.net/papers/essence-of-ad/}{ICFP 2018 paper}: pictures, proofs, incremental computation.
 \end{itemize}
 }
 
@@ -1077,6 +1130,7 @@ Not previously applied to AD (afaik).
 
 }
 
+%if not icfp
 \framet{Symbolic vs automatic differentiation}{
 Often described as opposing techniques:
 \begin{itemize}\itemsep2ex
@@ -1097,5 +1151,26 @@ Often described as opposing techniques:
 My view: \emph{AD is SD done by a compiler.}\\[2ex]
 Compilers already work symbolically and preserve sharing.
 }
+%endif
+
+%if full
+\nc\link[1]{\hyperlink{#1}{#1}}
+\nc\litem[1]{\item \link{#1}}
+
+\framet{}{}
+
+\framet{Extra topics}{
+
+\begin{itemize}\itemsep4ex
+\litem{Examples: derivatives as functions}
+\litem{Examples: reverse mode}
+\litem{Incremental evaluation}
+\litem{Compositional matrices}
+%% \litem{Linear arrow (biproduct) vocabulary}
+%% \litem{Symbolic vs automatic differentiation}
+\end{itemize}
+}
+
+%endif
 
 \end{document}
