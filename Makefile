@@ -42,12 +42,19 @@ pdfs: $(pdfs)
 clean:
 	rm -f {full,icfp,google}.{tex,pdf,aux,nav,snm,ptb,log,out,toc}
 
-web: web-token
-
 STASH=conal@conal.net:/home/conal/web/talks
 
-web: web-token
+# # make: Circular macros.pdf <- macros.tex dependency dropped.
+# %.web: %.pdf
+# 	scp $? $(STASH)/essence-of-automatic-differentiation-$?
+# 	touch $@
 
-web-token: google.pdf
+google.web: google.pdf
 	scp $? $(STASH)/essence-of-automatic-differentiation-$?
 	touch $@
+
+full.web: full.pdf
+	scp $? $(STASH)/essence-of-automatic-differentiation-$?
+	touch $@
+
+web: google.web full.web
