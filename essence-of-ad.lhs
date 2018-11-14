@@ -68,10 +68,10 @@ January/June 2018
 
 %format der = "\mathcal{D}"
 
-%if google
-\nc\firstTitle{Differentiable programming made easy}
-%else
+%if icfp
 \nc\firstTitle{Machine learning: promise and problems}
+%else
+\nc\firstTitle{Differentiable programming made easy}
 %endif
 
 \framet{\firstTitle}{
@@ -79,7 +79,7 @@ January/June 2018
 \parskip2ex
 
 %% Impressive results.\pause\hspace{-3pt}, but
-Current AI revolution runs on large data, speed, and AD.\pause\hspace{-3pt}, but
+Current ML revolution runs on large data, speed, and AD.\pause\hspace{-3pt}, but
 \begin{itemize}\itemsep3ex
 \item AD algorithm (backprop) is complex and stateful.
 \item Complex graph APIs.
@@ -118,11 +118,12 @@ Solutions:
 }
 %endif
 
-%if full
+%if not icfp
 \framet{What's a derivative?}{
 {
 %if google
 \renewcommand\pitem\item
+\pause
 %endif
 \begin{itemize}\itemsep4ex
 \pitem Number
@@ -341,7 +342,6 @@ adf f = D (f &&& der f)     -- not computable
 \end{code}
 \pause
 
-% Specification: |D| is a cartesian category, and |adf| preserves structure, i.e.,
 Specification: |adf| preserves |Category| and |Cartesian| structure:
 {\setlength{\blanklineskip}{1ex}
 \begin{minipage}[c]{0.49\textwidth} % \mathindent1em
@@ -412,7 +412,7 @@ In categorical vocabulary:
 \begin{code}
 sqr = mulC . (id &&& id)
 
-magSqr = addC . (sqr . exl &&& sqr . exr)
+magSqr = addC . ((sqr . exl) &&& (sqr . exr))
 
 cosSinProd = (cosC &&& sinC) . mulC
 \end{code}
@@ -424,7 +424,7 @@ cosSinProd = (cosC &&& sinC) . mulC
 \begin{code}
 magSqr (a,b) = sqr a + sqr b
 NOP
-magSqr = addC . (sqr . exl &&& sqr . exr)
+magSqr = addC . ((sqr . exl) &&& (sqr . exr))
 \end{code}
 \vspace{-5ex}
 \begin{center}\wpicture{4in}{magSqr}\end{center}
@@ -458,7 +458,7 @@ sqr = mulC . (id &&& id)
 \begin{code}
 magSqr (a,b) = sqr a + sqr b
 
-magSqr = addC . (sqr . exl &&& sqr . exr)
+magSqr = addC . ((sqr . exl) &&& (sqr . exr))
 \end{code}
 \begin{textblock}{160}[1,0](357,37)
 \begin{tcolorbox}
