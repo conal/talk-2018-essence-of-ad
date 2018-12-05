@@ -1,14 +1,16 @@
 ## The simple essence of automatic differentiation
 
 *   [Invited talk for PEPM (January) 2018](https://popl18.sigplan.org/track/PEPM-2018#Invited-Talks):
-    *   [Slides](http://conal.net/talks/essence-of-automatic-differentiation-2018-01.pdf) (529K PDF).
+    *   [Slides](http://conal.net/talks/essence-of-automatic-differentiation-2018-01.pdf) (47eK PDF).
     *   [Video (slides + audio)](https://youtu.be/Shl3MtWGu18) (60 minutes, 104MB).
 *   Revised for Microsoft Research, June 2018:
-    *   [Slides](http://conal.net/talks/essence-of-automatic-differentiation-2018-06.pdf) (484K PDF).
+    *   [Slides](http://conal.net/talks/essence-of-automatic-differentiation-2018-06.pdf) (496K PDF).
     *   Video [via microsoft.com](https://www.microsoft.com/en-us/research/video/the-simple-essence-of-automatic-differentiation/) or [directly on YouTube](https://www.youtube.com/watch?v=ne99laPUxN4) (90 minutes).
-*   ICFP 2018:
+*   ICFP 2018, September 2018:
     *   [Slides](http://conal.net/talks/essence-of-automatic-differentiation-icfp.pdf) (173K PDF).
     *   [Video](https://youtu.be/MmkNSsGAZhw) (21 minutes)
+*   Google, November 2018:
+    *   [Slides](http://conal.net/talks/essence-of-automatic-differentiation-google.pdf) (207K PDF).
 *   [Paper](http://conal.net/papers/essence-of-ad/) (ICFP 2018 and extended version, plus related work).
 
 ### Abstract
