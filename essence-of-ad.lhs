@@ -570,7 +570,7 @@ Rephrase:
 scale :: Multiplicative a => a -> (a -> a)
 scale u = \ v -> u * v
 
-(||||) :: (a -> c) -> (b -> c) -> ((a :* b) -> c)
+(||||) :: Additive c => (a -> c) -> (b -> c) -> ((a :* b) -> c)
 (f |||| g) (a,b) = f a ^+^ g b
 \end{code}
 
