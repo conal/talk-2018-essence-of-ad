@@ -1,12 +1,16 @@
-talk = essence-of-ad
+# talk = essence-of-ad
+talk = mit-categories
 
 texdeps = formatting.fmt Makefile
 
 .PRECIOUS: %.tex %.pdf %.web
 
-all: google.pdf
-all: icfp.pdf
-all: full.pdf
+all: mit-categories.pdf
+
+
+# all: google.pdf
+# all: icfp.pdf
+# all: full.pdf
 
 # see: $(TARG).see
 
@@ -20,6 +24,9 @@ icfp.tex: $(talk).lhs $(texdeps)
 	lhs2TeX --set=extended --set=icfp -o $*.tex $(talk).lhs
 
 google.tex: $(talk).lhs $(texdeps)
+	lhs2TeX --set=extended --set=google -o $*.tex $(talk).lhs
+
+mit-categories.tex: mit-categories.lhs $(texdeps)
 	lhs2TeX --set=extended --set=google -o $*.tex $(talk).lhs
 
 %.pdf: %.tex macros.tex $(pdfs) Makefile
@@ -57,4 +64,10 @@ full.web: full.pdf
 	scp $? $(STASH)/essence-of-automatic-differentiation-$?
 	touch $@
 
-web: google.web full.web
+mit-categories.web: mit-categories.pdf
+	scp $? $(STASH)/essence-of-automatic-differentiation-$?
+	touch $@
+
+# web: google.web full.web
+
+web: mit-categories.web
