@@ -118,29 +118,7 @@
 
 \newcommand\sourced[1]{\href{#1}{\tiny (source)}}
 
-
-\definecolor{statColor}{rgb}{0,0.5,0}
-
-\newcommand{\stats}[2]{
-{\small \textcolor{statColor}{work: #1, depth: #2}}}
-
-\newcommand\ccircuit[3]{
-\framet{#1}{
-\vspace{#2ex}
-\wfig{4.5in}{circuits/#3}
-}}
-
-\newcommand\circuit[5]{
-\ccircuit{#1 \hfill \stats {#4}{#5}\hspace{2ex}}{#2}{#3}
-}
-
-\DeclareMathOperator{\D}{Depth}
-\DeclareMathOperator{\W}{Work}
-\nc\Size[1]{\lvert #1 \rvert}
-
-
 \author{\href{http://conal.net}{Conal Elliott}}
-%% \institute{Target}
 
 \graphicspath{{Figures/}}
 
@@ -178,3 +156,5 @@
 \nc\bplus{\pmb{+}}
 % \nc\bcomp{\pmb{\circ}}
 \nc\bcomp{\circ}
+
+%% \usepackage{stmaryrd}
