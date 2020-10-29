@@ -14,8 +14,9 @@
 %include greek.fmt
 %include formatting.fmt
 
-\title[]{The simple essence of automatic differentiation}
-\subtitle{Differentiable programming made easy}
+%% \title[]{The simple essence of automatic differentiation}
+%% \subtitle{Differentiable programming made easy}
+\title[]{Efficient automatic differentiation made easy \\[1.5ex] via elementary category theory}
 \date{October 29, 2020}
 
 \setlength{\itemsep}{2ex}
@@ -40,7 +41,8 @@
 
 \frame{\titlepage}
 % \title{Essence of automatic differentiation}
-\title{Simple essence of AD}
+% \title{Simple essence of AD}
+\title{Efficient automatic differentiation made easy}
 \date{October, 2020}
 
 %format der = "\mathcal{D}"
