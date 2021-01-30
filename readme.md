@@ -11,6 +11,9 @@
     *   [Video](https://youtu.be/MmkNSsGAZhw) (21 minutes)
 *   Google, November 2018:
     *   [Slides](http://conal.net/talks/essence-of-automatic-differentiation-google.pdf) (207K PDF).
+*   MIT categories seminar: *Automatic differentiation made easy via category theory*
+    *   [Video](https://www.youtube.com/watch?v=17gfCTnw6uE)
+    *   [Slides](http://conal.net/talks/essence-of-automatic-differentiation-mit-categories.pdf)
 *   [Paper](http://conal.net/papers/essence-of-ad/) (ICFP 2018 and extended version, plus related work).
 
 ### Abstract
