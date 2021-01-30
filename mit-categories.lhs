@@ -49,6 +49,8 @@
 
 \framet{What is differentiation? (Fréchet)}{\mathindent20ex
 
+\vspace{-4ex}
+
 On Banach spaces |a| and |b|,
 
 > der :: (a -> b) -> (a -> (a :-* b))
